@@ -1,0 +1,422 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+    <id>https://son012.github.io</id>
+    <title>Cunshan</title>
+    <updated>2021-05-24T08:02:52.219Z</updated>
+    <generator>https://github.com/jpmonette/feed</generator>
+    <link rel="alternate" href="https://son012.github.io"/>
+    <link rel="self" href="https://son012.github.io/atom.xml"/>
+    <subtitle>温故而知新</subtitle>
+    <logo>https://son012.github.io/images/avatar.png</logo>
+    <icon>https://son012.github.io/favicon.ico</icon>
+    <rights>All rights reserved 2021, Cunshan</rights>
+    <entry>
+        <title type="html"><![CDATA[NFQUEUE 用户态数据包处理]]></title>
+        <id>https://son012.github.io/post/nfqueue-yong-hu-tai-shu-ju-bao-chu-li/</id>
+        <link href="https://son012.github.io/post/nfqueue-yong-hu-tai-shu-ju-bao-chu-li/">
+        </link>
+        <updated>2021-05-24T07:52:26.000Z</updated>
+        <content type="html"><![CDATA[<h1 id="nfqueue-用户态数据包处理">NFQUEUE 用户态数据包处理</h1>
+<p>本文部分翻译自<a href="https://home.regit.org/netfilter-en/using-nfqueue-and-libnetfilter_queue/">Using NFQUEUE and libnetfilter_queue</a>。</p>
+<p>NFQUEUE 是 iptables 和 ip6tables 的一种 target，用于将数据包委托给用户态应用程序裁决如何处理数据包。用户态应用程序可以使用 libnetfilter_queue 库连接到该队列获取包含了数据包的内核消息，并必须为数据包做出一个裁决。</p>
+<p>下面是一个例子，将 udp 目的端口 10010 的发出包置入队列 10010 交由用户态应用程序裁决。</p>
+<pre><code class="language-shell">sudo iptables -A OUTPUT -p udp --dport 10010 -j NFQUEUE --queue-num 10010
+</code></pre>
+<h2 id="原理">原理</h2>
+<p>iptables 依赖内核 netfilter 框架完成功能，是 netfilter 框架的一个用户态工具。NFQUEUE 同样依赖 netfilter 框架并且需要内核包含 nfnetlink_queue 子系统（2.6.14 及以后的内核版本）。</p>
+<p>当一个数据包命中规则到达 NFQUEUE target，数据包在内核中被放入以数字序号区分的队列，队列由固定长度的链表实现，链表中保存数据包及元数据（内核 skb 结构），当数据包收到用户态裁决时会从队列中释放，每一个数据包必须有一个裁决，队列满时新到达的数据包将被内核做 drop 处理。</p>
+<p>用户态应用程序可以读取多个数据包以做出裁决，数据包的裁决可以与读取顺序无关，过慢的裁决对导致内核队列满，内核将 drop 新的数据包。</p>
+<p>内核和用户态程序使用 nfnetlink 协议通信。这是一个完全基于消息的协议，不包含任何共享内存。当一个数据包入队列，内核向 socket 发送一个 nfnetlink 格式的消息，消息包含数据包数据和相关信息，用户态程序读取这个 socket 就可以获取消息。用户态程序裁决一个数据包时，需要组织一个 nfnetlink 格式的消息，消息中包含数据包在队列中的索引号，然后将消息发送给 socket。</p>
+<h2 id="使用-libnetfilter_queue">使用 libnetfilter_queue</h2>
+<p><a href="https://netfilter.org/projects/libnetfilter_queue/index.html">libnetfilter_queue</a>的主要信息来源参考<a href="https://netfilter.org/projects/libnetfilter_queue/doxygen/">Doxygen generated documentation</a>。</p>
+<p>更多生产环境代码例子可以参考<a href="http://www.suricata-ids.org/">suricata</a>中<a href="https://doxygen.openinfosecfoundation.org/source-nfq_8c_source.html">source-nfq.c</a>。</p>
+<p>centos7.5 下安装 libnetfilter_queue-devel 以获取头文件及动态链接库。</p>
+<pre><code class="language-shell">sudo yum install libnetfilter_queue-devel
+</code></pre>
+<p>下面例子的代码演示了 libnetfilter_queue 的基本使用，包括基本的 ACCEPT、DROP 以及修改数据包后 ACCEPT。另外使用中发现了一个 libnetfilter_queue 在计算 udp 校验和时的 bug，因此将计算校验和的相关代码拷贝到了示例代码中并修复。该 bug 在 libnetfilter_queue 1.0.3 版本代码中依然存在。</p>
+<pre><code class="language-c">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;stdint.h&gt;
+#include &lt;errno.h&gt;
+#include &lt;string.h&gt;
+#include &lt;netinet/in.h&gt;
+#include &lt;linux/ip.h&gt;
+#include &lt;linux/udp.h&gt;
+#include &lt;linux/tcp.h&gt;
+#include &lt;sys/socket.h&gt;
+#include &lt;arpa/inet.h&gt;
+#include &lt;linux/netfilter.h&gt;
+#include &lt;libnetfilter_queue/libnetfilter_queue.h&gt;
+#include &lt;libnetfilter_queue/libnetfilter_queue_udp.h&gt;
+#include &lt;libnetfilter_queue/libnetfilter_queue_ipv4.h&gt;
+
+#define QUEUE_NUM 10010
+
+static uint16_t checksum(uint32_t sum, uint16_t *buf, int size)
+{
+    while (size &gt; 1) {
+        sum += *buf++;
+        size -= sizeof(uint16_t);
+    }
+    if (size)
+        sum += *(uint8_t *)buf;
+
+    sum = (sum &gt;&gt; 16) + (sum &amp; 0xffff);
+    sum += (sum &gt;&gt;16);
+
+    return (uint16_t)(~sum);
+}
+
+static uint16_t checksum_tcpudp_ipv4(struct iphdr *iph)
+{
+    uint32_t sum = 0;
+    uint32_t iph_len = iph-&gt;ihl*4;
+    uint32_t len = ntohs(iph-&gt;tot_len) - iph_len;
+    uint8_t *payload = (uint8_t *)iph + iph_len;
+
+    sum += (iph-&gt;saddr &gt;&gt; 16) &amp; 0xFFFF;
+    sum += (iph-&gt;saddr) &amp; 0xFFFF;
+    sum += (iph-&gt;daddr &gt;&gt; 16) &amp; 0xFFFF;
+    sum += (iph-&gt;daddr) &amp; 0xFFFF;
+    sum += htons(iph-&gt;protocol);
+    // 这是一个bug
+    //sum += htons(IPPROTO_TCP);
+    sum += htons(len);
+
+    return checksum(sum, (uint16_t *)payload, len);
+}
+static void udp_compute_checksum_ipv4(struct udphdr *udph, struct iphdr *iph)
+{
+    /* checksum field in header needs to be zero for calculation. */
+    udph-&gt;check = 0;
+    udph-&gt;check = checksum_tcpudp_ipv4(iph);
+}
+
+
+int cb(struct nfq_q_handle *qh, struct nfgenmsg *nfmsg, struct nfq_data *nfad, void *data) {
+    uint32_t id;
+    struct nfqnl_msg_packet_hdr *ph;
+    unsigned char *payload;
+    int r;
+    struct iphdr    *iph;
+    struct udphdr   *udph;
+    struct tcphdr   *tcph;
+    char saddr_str[16];
+    char daddr_str[16];
+    struct in_addr tmp_in_addr;
+    
+    ph = nfq_get_msg_packet_hdr(nfad);
+    if (ph) {
+        id = ntohl(ph-&gt;packet_id);
+        r = nfq_get_payload(nfad, &amp;payload);
+        if (r &gt;= sizeof(*iph)) {
+            iph = (struct iphdr *)payload;
+            tmp_in_addr.s_addr = iph-&gt;saddr;
+            strcpy(saddr_str, inet_ntoa(tmp_in_addr));
+            tmp_in_addr.s_addr = iph-&gt;daddr;
+            strcpy(daddr_str, inet_ntoa(tmp_in_addr));
+            if (iph-&gt;protocol == IPPROTO_UDP) {
+                if (iph-&gt;ihl * 4 + sizeof(*udph) &lt;= r) {
+                    udph = (struct udphdr *)(payload + iph-&gt;ihl * 4);
+                    if (ntohs(udph-&gt;dest) == 10010) {
+                        if (iph-&gt;ihl * 4 + sizeof(*udph) &lt; r &amp;&amp; ntohs(iph-&gt;tot_len) - iph-&gt;ihl * 4 == ntohs(udph-&gt;len) &amp;&amp; ntohs(udph-&gt;len) - sizeof(*udph) &gt; 0) {
+                            int offset = iph-&gt;ihl * 4 + sizeof(*udph);
+                            memset(payload + offset, 'h', ntohs(udph-&gt;len) - sizeof(*udph));
+                            memset(payload + iph-&gt;ihl * 4 + ntohs(udph-&gt;len) - 1, '\n', 1);
+                            // 由于修改了udp数据包内容，因此需要重新计算udp校验和。
+                            // libnetfilter_queue在udp校验和计算时有bug，因此计算校验和代码拷贝到本文件后修复使用。
+                            //nfq_udp_compute_checksum_ipv4(udph, iph);
+                            udp_compute_checksum_ipv4(udph, iph);
+                            printf(&quot;ACCEPT &amp; modified  protocol:udp %s:%u -&gt; %s:%u\n&quot;, saddr_str, ntohs(udph-&gt;source), daddr_str, ntohs(udph-&gt;dest));
+                        } else {
+                            printf(&quot;ACCEPT &amp; !modified  protocol:udp %s:%u -&gt; %s:%u\n&quot;, saddr_str, ntohs(udph-&gt;source), daddr_str, ntohs(udph-&gt;dest));
+                        }
+                        nfq_set_verdict(qh, id, NF_ACCEPT, r, payload);
+                    } else if (ntohs(udph-&gt;dest) == 10086) {
+                        printf(&quot;DROP    protocol:udp %s:%u -&gt; %s:%u\n&quot;, saddr_str, ntohs(udph-&gt;source), daddr_str, ntohs(udph-&gt;dest));
+                        nfq_set_verdict(qh, id, NF_DROP, 0, NULL);
+                    } else {
+                        printf(&quot;ACCEPT  protocol:udp %s:%u -&gt; %s:%u\n&quot;, saddr_str, ntohs(udph-&gt;source), daddr_str, ntohs(udph-&gt;dest));
+                        nfq_set_verdict(qh, id, NF_ACCEPT, 0, NULL);
+                    }
+                } else {
+                    printf(&quot;ACCEPT  protocol:udp %s -&gt; %s\n&quot;, saddr_str, daddr_str);
+                    nfq_set_verdict(qh, id, NF_ACCEPT, 0, NULL);
+                }
+            } else if (iph-&gt;protocol == IPPROTO_TCP) {
+                if (iph-&gt;ihl * 4 + sizeof(*tcph) &lt;= r) {
+                    tcph = (struct tcphdr *)(payload + iph-&gt;ihl *4);
+                    printf(&quot;ACCEPT  protocol:tcp %s:%u -&gt; %s:%u\n&quot;, saddr_str, ntohs(tcph-&gt;source), daddr_str, ntohs(tcph-&gt;dest));
+                    nfq_set_verdict(qh, id, NF_ACCEPT, 0, NULL);
+                } else {
+                    printf(&quot;ACCEPT  protocol:tcp %s -&gt; %s\n&quot;, saddr_str, daddr_str);
+                    nfq_set_verdict(qh, id, NF_ACCEPT, 0, NULL);
+                }
+            } else {
+                printf(&quot;ACCEPT  protocol:%d %s -&gt; %s\n&quot;, iph-&gt;protocol, saddr_str, daddr_str);
+                nfq_set_verdict(qh, id, NF_ACCEPT, 0, NULL);
+            }
+        } else {
+            printf(&quot;ACCEPT  unknown protocol\n&quot;);
+            nfq_set_verdict(qh, id, NF_ACCEPT, 0, NULL);
+        }
+    }
+
+    return 0;
+}
+
+int main()  {
+    struct nfq_handle *h;
+    struct nfq_q_handle *qh;
+    int r;
+
+    char buf[10240];
+
+    h = nfq_open();
+    if (h == NULL) {
+        perror(&quot;nfq_open error&quot;);
+        goto end;
+    }
+
+    if (nfq_unbind_pf(h, AF_INET) != 0) {
+        perror(&quot;nfq_unbind_pf error&quot;);
+        goto end;
+    }
+    if (nfq_bind_pf(h, AF_INET) != 0) {
+        perror(&quot;nfq_bind_pf error&quot;);
+        goto end;
+    }
+
+    qh = nfq_create_queue(h, QUEUE_NUM, &amp;cb, NULL);
+    if (qh == NULL) {
+        perror(&quot;nfq_create_queue error&quot;);
+        goto end;
+    }
+
+    if (nfq_set_mode(qh, NFQNL_COPY_PACKET, 0xffff) != 0) {
+        perror(&quot;nfq_set_mod error&quot;);
+        goto end;
+    }
+
+    while(1) {
+        r = recv(nfq_fd(h), buf, sizeof(buf), 0);
+        if (r == 0) {
+            printf(&quot;recv return 0. exit&quot;);
+            break;
+        } else if (r &lt; 0) {
+            perror(&quot;recv error&quot;);
+            break;
+        } else {
+            nfq_handle_packet(h, buf, r);
+        }
+    }
+
+end:
+    if (qh) nfq_destroy_queue(qh);
+    if (h) nfq_close(h);
+    return 0;
+}
+</code></pre>
+<pre><code class="language-shell">gcc -Wall -g -l netfilter_queue nfqueue_example.c
+sudo ./a.out
+</code></pre>
+<pre><code class="language-shell">sudo iptables -A OUTPUT -p udp --dport 10010 -j NFQUEUE --queue-num 10010
+sudo iptables -A OUTPUT -p udp --dport 10086 -j NFQUEUE --queue-num 10010
+sudo iptables -A OUTPUT -p tcp --dport 10010 -j NFQUEUE --queue-num 10010
+sudo iptables -A OUTPUT -p tcp --dport 10086 -j NFQUEUE --queue-num 10010
+</code></pre>
+<p>使用 nc 测试几种数据包发送后，可以看到刚刚运行的程序输出。</p>
+<pre><code>ACCEPT  protocol:tcp 10.95.29.17:44660 -&gt; 10.95.29.15:10010
+ACCEPT  protocol:tcp 10.95.29.17:39562 -&gt; 10.95.29.15:10086
+ACCEPT &amp; modified  protocol:udp 10.95.29.17:38600 -&gt; 10.95.29.15:10010
+DROP    protocol:udp 10.95.29.17:46122 -&gt; 10.95.29.15:10086
+</code></pre>
+<p>由于对 OUTPUT 包的修改在 PF_PACKET 数据包捕获之前，因此如果运行 tcpdump 抓取数据包，可以看到相应的 ACCEPT、DROP 及数据包内容的修改都已经生效。</p>
+<p>如果是对 INPUT 包的修改，由于 PF_PACKET 数据包捕获在 netfilter 之前，那么 tcpdump 将无法看到修改后的内容，但是修改后的内容将对内核协议栈生效。</p>
+<p><strong>ps：测试环境使用完成后记得清理 iptables 规则。</strong></p>
+<p><a href="http://www.hyuuhit.com/2018/07/13/nfqueue/">http://www.hyuuhit.com/2018/07/13/nfqueue/</a></p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Qt使用百度AI接口，实现OCR]]></title>
+        <id>https://son012.github.io/post/qt-shi-yong-bai-du-ai-jie-kou-shi-xian-ocr/</id>
+        <link href="https://son012.github.io/post/qt-shi-yong-bai-du-ai-jie-kou-shi-xian-ocr/">
+        </link>
+        <updated>2021-05-24T07:49:51.000Z</updated>
+        <content type="html"><![CDATA[<p><a href="https://my.oschina.net/feiyangqingyun/blog/1927304">https://my.oschina.net/feiyangqingyun/blog/1927304</a></p>
+<p>1. 注册百度 AI 的帐号后，申请文字识别应用</p>
+<figure data-type="image" tabindex="1"><img src="https://www.yht7.com/upload/image/20200221/up-f5799f14dd68a445fe1b2ad28ce17392196.png" alt="" loading="lazy"></figure>
+<p>2. 打开应用管理后，记录下 api key 跟 security key</p>
+<figure data-type="image" tabindex="2"><img src="https://www.yht7.com/upload/image/20200221/up-9320835b9ddae00c131b0260e24668accfc.png" alt="" loading="lazy"></figure>
+<p>3. 根据 api key 跟 security key 获取 access token</p>
+<p>百度给的文档是</p>
+<p><a href="http://ai.baidu.com/ai-doc/REFERENCE/Ck3dwjhhu">http://ai.baidu.com/ai-doc/REFERENCE/Ck3dwjhhu</a></p>
+<p>Qt 的实现如下</p>
+<p>pNetManager 是 QNetworkAccessManager 类型的</p>
+<pre><code class="language-cpp">void MainWindow::getAccessToken()
+{
+    if (!pNetManager)
+    {
+
+        return;
+    }
+    QString key = ui-&gt;lineEdit_api-&gt;text();
+    QString secret = ui-&gt;lineEdit_secret-&gt;text();
+
+    QString param = &quot;https://aip.baidubce.com/oauth/2.0/token?grant_type=client_credentials&amp;client_id=&quot;+key+&quot;&amp;client_secret=&quot;+secret+&quot;&amp;&quot;;
+
+    QUrl url(param);
+    connect(pNetManager, &amp;QNetworkAccessManager::finished, this, &amp;MainWindow::replyAccessToken);
+    pNetManager-&gt;get(QNetworkRequest(param));
+}
+</code></pre>
+<p>4. 收到的应答代码如下</p>
+<p>accessToken 为 QString，这个是百度返回的</p>
+<pre><code class="language-cpp">void MainWindow::replyAccessToken(QNetworkReply* pReply)
+{
+    QNetworkReply::NetworkError err = pReply-&gt;error();
+    if(err != QNetworkReply::NoError) {
+        qDebug() &lt;&lt; &quot;Failed: &quot; &lt;&lt; pReply-&gt;readAll();
+    }else {
+        //获取内容
+        QJsonParseError jsonErr;
+        QJsonDocument jsonDoc = QJsonDocument::fromJson(pReply-&gt;readAll(), &amp;jsonErr);
+        if (jsonDoc.isObject()){
+            QJsonObject jsonObj = jsonDoc.object();
+            accessToken = jsonObj.take(&quot;access_token&quot;).toString();
+            ui-&gt;lineEdit-&gt;setText(accessToken);
+        }
+    }
+}
+</code></pre>
+<p>5. 打开加载的图片，转换为 BASE64</p>
+<pre><code class="language-cpp">void MainWindow::openImag()
+{
+    QString openFile;
+    QImage image;
+    openFile = QFileDialog::getOpenFileName(
+                this,
+                tr(&quot;打开相片&quot;),
+                &quot;&quot;,
+                &quot;Image Files(*.jpg *.png *.bmp *.pgm *.pbm);;All(*.*)&quot;);
+
+    if( openFile != &quot;&quot; &amp;&amp; image.load(openFile))
+    {
+        QByteArray imageData;
+        QBuffer buff(&amp;imageData);
+        image.save(&amp;buff, &quot;jpg&quot;);
+        ui-&gt;textBrowser_base64-&gt;setText(imageData.toBase64());
+    }
+}
+</code></pre>
+<p>6. 发送给百度</p>
+<pre><code class="language-cpp">void MainWindow::reganize()
+{
+    QString param = ui-&gt;textBrowser_base64-&gt;toPlainText();
+    if (param.isEmpty())
+    {
+        qDebug() &lt;&lt; &quot;base64 empty&quot;;
+        return;
+    }
+    if (ui-&gt;lineEdit-&gt;text().isEmpty())
+    {
+        qDebug() &lt;&lt; &quot;accessToken empty&quot;;
+        return;
+    }
+    if (accessToken.isEmpty())
+    {
+        accessToken = ui-&gt;lineEdit-&gt;text();
+    }
+
+    QUrl url;
+    url.setUrl(&quot;https://aip.baidubce.com/rest/2.0/ocr/v1/general_basic?access_token=&quot;+accessToken);
+
+    QNetworkRequest request;
+    request.setUrl(url);
+    request.setHeader(QNetworkRequest::ContentTypeHeader,QVariant(&quot;application/x-www-form-urlencoded&quot;));
+    QByteArray byteArr;
+    byteArr.append(&quot;image=&quot;);
+    byteArr.append(QUrl::toPercentEncoding(param));
+
+    connect(pNetManager, &amp;QNetworkAccessManager::finished, this, &amp;MainWindow::reganizeResult);
+
+    pNetManager-&gt;post(request, byteArr);
+}
+</code></pre>
+<p>7. 收到识别结果</p>
+<pre><code class="language-cpp">void MainWindow::reganizeResult(QNetworkReply* pReply)
+{
+    QNetworkReply::NetworkError err = pReply-&gt;error();
+    if(err != QNetworkReply::NoError) {
+        qDebug() &lt;&lt; &quot;Failed: &quot; &lt;&lt; pReply-&gt;readAll();
+    }else {
+        //获取内容
+        QJsonParseError jsonErr;
+        QJsonDocument jsonDoc = QJsonDocument::fromJson(pReply-&gt;readAll(), &amp;jsonErr);
+        if (jsonDoc.isObject()){
+            QJsonObject jsonObj = jsonDoc.object();
+
+            int wordsNum = jsonObj.take(&quot;words_result_num&quot;).toInt();
+            QJsonArray jsonArr = jsonObj.take(&quot;words_result&quot;).toArray();
+            QString text;
+            for (int i = 0; i &lt; wordsNum; i++){
+                text.append(jsonArr[i].toObject().take(&quot;words&quot;).toString());
+                text.append(&quot;&lt;br&gt;&quot;);
+            }
+            if (!text.isEmpty()){
+                ui-&gt;textBrowser_result-&gt;setText(text);
+            }
+        }
+    }
+}
+</code></pre>
+<p>8. 需要的话加个拷贝结果的</p>
+<pre><code class="language-cpp">void MainWindow::copyBoard()
+{
+    QClipboard *board = QApplication::clipboard();
+    board-&gt;setText(ui-&gt;textBrowser_result-&gt;toPlainText());
+}
+</code></pre>
+<p><a href="https://www.yht7.com/news/24987">https://www.yht7.com/news/24987</a></p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Centos7 开机自动加载 模块 ko]]></title>
+        <id>https://son012.github.io/post/centos7-kai-ji-zi-dong-jia-zai-mo-kuai-ko/</id>
+        <link href="https://son012.github.io/post/centos7-kai-ji-zi-dong-jia-zai-mo-kuai-ko/">
+        </link>
+        <updated>2021-05-24T07:42:04.000Z</updated>
+        <content type="html"><![CDATA[<p>假设现在有一个内核模块文件名为 c1004.ko</p>
+<ol>
+<li>首选复制编译完成的模块到内核设备目录</li>
+</ol>
+<p>sudo cp c1004.ko /lib/modules/$(uname -r)/kernel/drivers/</p>
+<ol start="2">
+<li>创建模块启动文件</li>
+</ol>
+<p>sudo cat &gt; /etc/modules-load.d/c1004.conf &lt;&lt;EOF</p>
+<h1 id="load-c1004ko-at-boot">Load c1004.ko at boot</h1>
+<p>c1004<br>
+EOF</p>
+<ol start="3">
+<li>更新模块，然后重启</li>
+</ol>
+<p>sudo depmod</p>
+<p>reboot</p>
+<ol start="4">
+<li>重启后检查模块是否已经正常安装</li>
+</ol>
+<p>lsmod |grep c1004</p>
+<h1 id="输出类似下面内容说明自启动-ok">输出类似下面内容说明自启动 OK</h1>
+<p>c1004                  30081  0</p>
+<p>如果运行 insmod c1004.ko 报错则需要重新编译驱动文件。</p>
+<p>卸载驱动 rmmod c1004</p>
+<p>参考文献</p>
+<p>[1]. Bob Enohp . How to load a custom module at the boot time in Ubuntu? . https://stackoverflow.com/questions/4356224/how-to-load-a-custom-module-at-the-boot-time-in-ubuntu . 2013.11.14<br>
+[2]. taliezin . What’s the difference of /etc/modules-load.d and /etc/modules? . https://unix.stackexchange.com/questions/189670/whats-the-difference-of-etc-modules-load-d-and-etc-modules . 2015.03.12<br>
+[3]. redhat . 2.6. PERSISTENT MODULE LOADING .https://access.redhat.com/documentation/en-US/Red_Hat_Enterprise_Linux/7/html/Kernel_Administration_Guide/sec-Persistent_Module_Loading.html</p>
+<p>显示推荐内容<br>
+https://blog.csdn.net/q1009020096/article/details/102547839</p>
+]]></content>
+    </entry>
+</feed>

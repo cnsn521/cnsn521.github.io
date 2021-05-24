@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" >
+
+<title>NFQUEUE 用户态数据包处理 | Cunshan</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+<link rel="shortcut icon" href="https://son012.github.io/favicon.ico?v=1621843366095">
+<link rel="stylesheet" href="https://son012.github.io/styles/main.css">
+
+
+
+<link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+
+
+
+    <meta name="description" content="NFQUEUE 用户态数据包处理
+本文部分翻译自Using NFQUEUE and libnetfilter_queue。
+NFQUEUE 是 iptables 和 ip6tables 的一种 target，用于将数据包委托给用户态应用程序..." />
+    <meta name="keywords" content="" />
+  </head>
+  <body>
+    <div id="app" class="main">
+
+      <div class="sidebar" :class="{ 'full-height': menuVisible }">
+  <div class="top-container" data-aos="fade-right">
+    <div class="top-header-container">
+      <a class="site-title-container" href="https://son012.github.io">
+        <img src="https://son012.github.io/images/avatar.png?v=1621843366095" class="site-logo">
+        <h1 class="site-title">Cunshan</h1>
+      </a>
+      <div class="menu-btn" @click="menuVisible = !menuVisible">
+        <div class="line"></div>
+      </div>
+    </div>
+    <div>
+      
+        
+          <a href="/" class="site-nav">
+            首页
+          </a>
+        
+      
+        
+          <a href="/archives" class="site-nav">
+            归档
+          </a>
+        
+      
+        
+          <a href="/tags" class="site-nav">
+            标签
+          </a>
+        
+      
+        
+          <a href="/post/about" class="site-nav">
+            关于
+          </a>
+        
+      
+    </div>
+  </div>
+  <div class="bottom-container" data-aos="flip-up" data-aos-offset="0">
+    <div class="social-container">
+      
+        
+          <a class="social-link" href="https://github.com/son012" target="_blank">
+            <i class="fab fa-github"></i>
+          </a>
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    </div>
+    <div class="site-description">
+      温故而知新
+    </div>
+    <div class="site-footer">
+      Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a> | <a class="rss" href="https://son012.github.io/atom.xml" target="_blank">RSS</a>
+    </div>
+  </div>
+</div>
+
+
+      <div class="main-container">
+        <div class="content-container" data-aos="fade-up">
+          <div class="post-detail">
+            <h2 class="post-title">NFQUEUE 用户态数据包处理</h2>
+            <div class="post-date">2021-05-24</div>
+            
+            <div class="post-content" v-pre>
+              <h1 id="nfqueue-用户态数据包处理">NFQUEUE 用户态数据包处理</h1>
+<p>本文部分翻译自<a href="https://home.regit.org/netfilter-en/using-nfqueue-and-libnetfilter_queue/">Using NFQUEUE and libnetfilter_queue</a>。</p>
+<p>NFQUEUE 是 iptables 和 ip6tables 的一种 target，用于将数据包委托给用户态应用程序裁决如何处理数据包。用户态应用程序可以使用 libnetfilter_queue 库连接到该队列获取包含了数据包的内核消息，并必须为数据包做出一个裁决。</p>
+<p>下面是一个例子，将 udp 目的端口 10010 的发出包置入队列 10010 交由用户态应用程序裁决。</p>
+<pre><code class="language-shell">sudo iptables -A OUTPUT -p udp --dport 10010 -j NFQUEUE --queue-num 10010
+</code></pre>
+<h2 id="原理">原理</h2>
+<p>iptables 依赖内核 netfilter 框架完成功能，是 netfilter 框架的一个用户态工具。NFQUEUE 同样依赖 netfilter 框架并且需要内核包含 nfnetlink_queue 子系统（2.6.14 及以后的内核版本）。</p>
+<p>当一个数据包命中规则到达 NFQUEUE target，数据包在内核中被放入以数字序号区分的队列，队列由固定长度的链表实现，链表中保存数据包及元数据（内核 skb 结构），当数据包收到用户态裁决时会从队列中释放，每一个数据包必须有一个裁决，队列满时新到达的数据包将被内核做 drop 处理。</p>
+<p>用户态应用程序可以读取多个数据包以做出裁决，数据包的裁决可以与读取顺序无关，过慢的裁决对导致内核队列满，内核将 drop 新的数据包。</p>
+<p>内核和用户态程序使用 nfnetlink 协议通信。这是一个完全基于消息的协议，不包含任何共享内存。当一个数据包入队列，内核向 socket 发送一个 nfnetlink 格式的消息，消息包含数据包数据和相关信息，用户态程序读取这个 socket 就可以获取消息。用户态程序裁决一个数据包时，需要组织一个 nfnetlink 格式的消息，消息中包含数据包在队列中的索引号，然后将消息发送给 socket。</p>
+<h2 id="使用-libnetfilter_queue">使用 libnetfilter_queue</h2>
+<p><a href="https://netfilter.org/projects/libnetfilter_queue/index.html">libnetfilter_queue</a>的主要信息来源参考<a href="https://netfilter.org/projects/libnetfilter_queue/doxygen/">Doxygen generated documentation</a>。</p>
+<p>更多生产环境代码例子可以参考<a href="http://www.suricata-ids.org/">suricata</a>中<a href="https://doxygen.openinfosecfoundation.org/source-nfq_8c_source.html">source-nfq.c</a>。</p>
+<p>centos7.5 下安装 libnetfilter_queue-devel 以获取头文件及动态链接库。</p>
+<pre><code class="language-shell">sudo yum install libnetfilter_queue-devel
+</code></pre>
+<p>下面例子的代码演示了 libnetfilter_queue 的基本使用，包括基本的 ACCEPT、DROP 以及修改数据包后 ACCEPT。另外使用中发现了一个 libnetfilter_queue 在计算 udp 校验和时的 bug，因此将计算校验和的相关代码拷贝到了示例代码中并修复。该 bug 在 libnetfilter_queue 1.0.3 版本代码中依然存在。</p>
+<pre><code class="language-c">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;stdint.h&gt;
+#include &lt;errno.h&gt;
+#include &lt;string.h&gt;
+#include &lt;netinet/in.h&gt;
+#include &lt;linux/ip.h&gt;
+#include &lt;linux/udp.h&gt;
+#include &lt;linux/tcp.h&gt;
+#include &lt;sys/socket.h&gt;
+#include &lt;arpa/inet.h&gt;
+#include &lt;linux/netfilter.h&gt;
+#include &lt;libnetfilter_queue/libnetfilter_queue.h&gt;
+#include &lt;libnetfilter_queue/libnetfilter_queue_udp.h&gt;
+#include &lt;libnetfilter_queue/libnetfilter_queue_ipv4.h&gt;
+
+#define QUEUE_NUM 10010
+
+static uint16_t checksum(uint32_t sum, uint16_t *buf, int size)
+{
+    while (size &gt; 1) {
+        sum += *buf++;
+        size -= sizeof(uint16_t);
+    }
+    if (size)
+        sum += *(uint8_t *)buf;
+
+    sum = (sum &gt;&gt; 16) + (sum &amp; 0xffff);
+    sum += (sum &gt;&gt;16);
+
+    return (uint16_t)(~sum);
+}
+
+static uint16_t checksum_tcpudp_ipv4(struct iphdr *iph)
+{
+    uint32_t sum = 0;
+    uint32_t iph_len = iph-&gt;ihl*4;
+    uint32_t len = ntohs(iph-&gt;tot_len) - iph_len;
+    uint8_t *payload = (uint8_t *)iph + iph_len;
+
+    sum += (iph-&gt;saddr &gt;&gt; 16) &amp; 0xFFFF;
+    sum += (iph-&gt;saddr) &amp; 0xFFFF;
+    sum += (iph-&gt;daddr &gt;&gt; 16) &amp; 0xFFFF;
+    sum += (iph-&gt;daddr) &amp; 0xFFFF;
+    sum += htons(iph-&gt;protocol);
+    // 这是一个bug
+    //sum += htons(IPPROTO_TCP);
+    sum += htons(len);
+
+    return checksum(sum, (uint16_t *)payload, len);
+}
+static void udp_compute_checksum_ipv4(struct udphdr *udph, struct iphdr *iph)
+{
+    /* checksum field in header needs to be zero for calculation. */
+    udph-&gt;check = 0;
+    udph-&gt;check = checksum_tcpudp_ipv4(iph);
+}
+
+
+int cb(struct nfq_q_handle *qh, struct nfgenmsg *nfmsg, struct nfq_data *nfad, void *data) {
+    uint32_t id;
+    struct nfqnl_msg_packet_hdr *ph;
+    unsigned char *payload;
+    int r;
+    struct iphdr    *iph;
+    struct udphdr   *udph;
+    struct tcphdr   *tcph;
+    char saddr_str[16];
+    char daddr_str[16];
+    struct in_addr tmp_in_addr;
+    
+    ph = nfq_get_msg_packet_hdr(nfad);
+    if (ph) {
+        id = ntohl(ph-&gt;packet_id);
+        r = nfq_get_payload(nfad, &amp;payload);
+        if (r &gt;= sizeof(*iph)) {
+            iph = (struct iphdr *)payload;
+            tmp_in_addr.s_addr = iph-&gt;saddr;
+            strcpy(saddr_str, inet_ntoa(tmp_in_addr));
+            tmp_in_addr.s_addr = iph-&gt;daddr;
+            strcpy(daddr_str, inet_ntoa(tmp_in_addr));
+            if (iph-&gt;protocol == IPPROTO_UDP) {
+                if (iph-&gt;ihl * 4 + sizeof(*udph) &lt;= r) {
+                    udph = (struct udphdr *)(payload + iph-&gt;ihl * 4);
+                    if (ntohs(udph-&gt;dest) == 10010) {
+                        if (iph-&gt;ihl * 4 + sizeof(*udph) &lt; r &amp;&amp; ntohs(iph-&gt;tot_len) - iph-&gt;ihl * 4 == ntohs(udph-&gt;len) &amp;&amp; ntohs(udph-&gt;len) - sizeof(*udph) &gt; 0) {
+                            int offset = iph-&gt;ihl * 4 + sizeof(*udph);
+                            memset(payload + offset, 'h', ntohs(udph-&gt;len) - sizeof(*udph));
+                            memset(payload + iph-&gt;ihl * 4 + ntohs(udph-&gt;len) - 1, '\n', 1);
+                            // 由于修改了udp数据包内容，因此需要重新计算udp校验和。
+                            // libnetfilter_queue在udp校验和计算时有bug，因此计算校验和代码拷贝到本文件后修复使用。
+                            //nfq_udp_compute_checksum_ipv4(udph, iph);
+                            udp_compute_checksum_ipv4(udph, iph);
+                            printf(&quot;ACCEPT &amp; modified  protocol:udp %s:%u -&gt; %s:%u\n&quot;, saddr_str, ntohs(udph-&gt;source), daddr_str, ntohs(udph-&gt;dest));
+                        } else {
+                            printf(&quot;ACCEPT &amp; !modified  protocol:udp %s:%u -&gt; %s:%u\n&quot;, saddr_str, ntohs(udph-&gt;source), daddr_str, ntohs(udph-&gt;dest));
+                        }
+                        nfq_set_verdict(qh, id, NF_ACCEPT, r, payload);
+                    } else if (ntohs(udph-&gt;dest) == 10086) {
+                        printf(&quot;DROP    protocol:udp %s:%u -&gt; %s:%u\n&quot;, saddr_str, ntohs(udph-&gt;source), daddr_str, ntohs(udph-&gt;dest));
+                        nfq_set_verdict(qh, id, NF_DROP, 0, NULL);
+                    } else {
+                        printf(&quot;ACCEPT  protocol:udp %s:%u -&gt; %s:%u\n&quot;, saddr_str, ntohs(udph-&gt;source), daddr_str, ntohs(udph-&gt;dest));
+                        nfq_set_verdict(qh, id, NF_ACCEPT, 0, NULL);
+                    }
+                } else {
+                    printf(&quot;ACCEPT  protocol:udp %s -&gt; %s\n&quot;, saddr_str, daddr_str);
+                    nfq_set_verdict(qh, id, NF_ACCEPT, 0, NULL);
+                }
+            } else if (iph-&gt;protocol == IPPROTO_TCP) {
+                if (iph-&gt;ihl * 4 + sizeof(*tcph) &lt;= r) {
+                    tcph = (struct tcphdr *)(payload + iph-&gt;ihl *4);
+                    printf(&quot;ACCEPT  protocol:tcp %s:%u -&gt; %s:%u\n&quot;, saddr_str, ntohs(tcph-&gt;source), daddr_str, ntohs(tcph-&gt;dest));
+                    nfq_set_verdict(qh, id, NF_ACCEPT, 0, NULL);
+                } else {
+                    printf(&quot;ACCEPT  protocol:tcp %s -&gt; %s\n&quot;, saddr_str, daddr_str);
+                    nfq_set_verdict(qh, id, NF_ACCEPT, 0, NULL);
+                }
+            } else {
+                printf(&quot;ACCEPT  protocol:%d %s -&gt; %s\n&quot;, iph-&gt;protocol, saddr_str, daddr_str);
+                nfq_set_verdict(qh, id, NF_ACCEPT, 0, NULL);
+            }
+        } else {
+            printf(&quot;ACCEPT  unknown protocol\n&quot;);
+            nfq_set_verdict(qh, id, NF_ACCEPT, 0, NULL);
+        }
+    }
+
+    return 0;
+}
+
+int main()  {
+    struct nfq_handle *h;
+    struct nfq_q_handle *qh;
+    int r;
+
+    char buf[10240];
+
+    h = nfq_open();
+    if (h == NULL) {
+        perror(&quot;nfq_open error&quot;);
+        goto end;
+    }
+
+    if (nfq_unbind_pf(h, AF_INET) != 0) {
+        perror(&quot;nfq_unbind_pf error&quot;);
+        goto end;
+    }
+    if (nfq_bind_pf(h, AF_INET) != 0) {
+        perror(&quot;nfq_bind_pf error&quot;);
+        goto end;
+    }
+
+    qh = nfq_create_queue(h, QUEUE_NUM, &amp;cb, NULL);
+    if (qh == NULL) {
+        perror(&quot;nfq_create_queue error&quot;);
+        goto end;
+    }
+
+    if (nfq_set_mode(qh, NFQNL_COPY_PACKET, 0xffff) != 0) {
+        perror(&quot;nfq_set_mod error&quot;);
+        goto end;
+    }
+
+    while(1) {
+        r = recv(nfq_fd(h), buf, sizeof(buf), 0);
+        if (r == 0) {
+            printf(&quot;recv return 0. exit&quot;);
+            break;
+        } else if (r &lt; 0) {
+            perror(&quot;recv error&quot;);
+            break;
+        } else {
+            nfq_handle_packet(h, buf, r);
+        }
+    }
+
+end:
+    if (qh) nfq_destroy_queue(qh);
+    if (h) nfq_close(h);
+    return 0;
+}
+</code></pre>
+<pre><code class="language-shell">gcc -Wall -g -l netfilter_queue nfqueue_example.c
+sudo ./a.out
+</code></pre>
+<pre><code class="language-shell">sudo iptables -A OUTPUT -p udp --dport 10010 -j NFQUEUE --queue-num 10010
+sudo iptables -A OUTPUT -p udp --dport 10086 -j NFQUEUE --queue-num 10010
+sudo iptables -A OUTPUT -p tcp --dport 10010 -j NFQUEUE --queue-num 10010
+sudo iptables -A OUTPUT -p tcp --dport 10086 -j NFQUEUE --queue-num 10010
+</code></pre>
+<p>使用 nc 测试几种数据包发送后，可以看到刚刚运行的程序输出。</p>
+<pre><code>ACCEPT  protocol:tcp 10.95.29.17:44660 -&gt; 10.95.29.15:10010
+ACCEPT  protocol:tcp 10.95.29.17:39562 -&gt; 10.95.29.15:10086
+ACCEPT &amp; modified  protocol:udp 10.95.29.17:38600 -&gt; 10.95.29.15:10010
+DROP    protocol:udp 10.95.29.17:46122 -&gt; 10.95.29.15:10086
+</code></pre>
+<p>由于对 OUTPUT 包的修改在 PF_PACKET 数据包捕获之前，因此如果运行 tcpdump 抓取数据包，可以看到相应的 ACCEPT、DROP 及数据包内容的修改都已经生效。</p>
+<p>如果是对 INPUT 包的修改，由于 PF_PACKET 数据包捕获在 netfilter 之前，那么 tcpdump 将无法看到修改后的内容，但是修改后的内容将对内核协议栈生效。</p>
+<p><strong>ps：测试环境使用完成后记得清理 iptables 规则。</strong></p>
+<p><a href="http://www.hyuuhit.com/2018/07/13/nfqueue/">http://www.hyuuhit.com/2018/07/13/nfqueue/</a></p>
+
+            </div>
+            
+            
+              <div class="next-post">
+                <div class="next">下一篇</div>
+                <a href="https://son012.github.io/post/qt-shi-yong-bai-du-ai-jie-kou-shi-xian-ocr/">
+                  <h3 class="post-title">
+                    Qt使用百度AI接口，实现OCR
+                  </h3>
+                </a>
+              </div>
+            
+
+            
+
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+<script type="application/javascript">
+
+AOS.init();
+
+var app = new Vue({
+  el: '#app',
+  data: {
+    menuVisible: false,
+  },
+})
+
+</script>
+
+
+  <script src="https://cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script>
+  <script>
+    hljs.initHighlightingOnLoad()
+  </script>
+
+
+
+
+
+  </body>
+</html>
