@@ -70,13 +70,13 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 </div>
 </div>
     <div id="content">
-<div class="markdown-body" id="postBody"><p><strong>### 一、前提</strong></p>
+<div class="markdown-body" id="postBody"><p>###** 一、前提**</p>
 <p>检查是否满足虚拟化要求, 可以根据如下步骤验证:</p>
 <p>检查是否开启虚拟化,如果值大于0则支持虚拟化，否则需要在BIOS中开启虚拟化, 重启重新执行如下命令<br>
 <code class="notranslate">egrep -c '(vmx|svm)' /proc/cpuinfo</code><br>
 检查CPU类型: 如果是Intel的CPU, 输出VMX;如果是AMD的CPU, 输出SVM</p>
 <p><code class="notranslate">grep -E --color '(vmx|svm)' /proc/cpuinfo</code><br>
-<strong>### 二、安装相关包</strong></p>
+###** 二、安装相关包**</p>
 <pre class="notranslate"><code class="notranslate">apt update
 apt install -y qemu-kvm libvirt-clients libvirt-daemon-system bridge-utils virtinst libvirt-daemon
 </code></pre>
@@ -112,7 +112,7 @@ iface br0 inet dhcp
 <pre class="notranslate"><code class="notranslate">systemctl restart networking.service
 ip a
 </code></pre>
-<p><strong>### 四、从镜像创建虚拟机</strong></p>
+<p>###** 四、从镜像创建虚拟机**</p>
 <p>创建Linux虚拟机</p>
 <h1>创建虚拟机磁盘</h1>
 <pre class="notranslate"><code class="notranslate">qemu-img create -f qcow2 /var/lib/libvirt/images/debian11.qcow2 20G
@@ -161,9 +161,9 @@ virt-install \
 --import
 </code></pre>
 <p>导出虚拟机为qcow2</p>
-<p><code class="notranslate">virt-clone --original debian11 --name debian11-clone --file /var/lib/libvirt/images/debian11-clone.qcow2</code><br>
-<strong>### 五、常见高级操作</strong><br>
-查看虚拟机<br>
+<p><code class="notranslate">virt-clone --original debian11 --name debian11-clone --file /var/lib/libvirt/images/debian11-clone.qcow2</code></p>
+<h3><strong>五、常见高级操作</strong></h3>
+<p>查看虚拟机<br>
 <code class="notranslate">virsh list --all</code><br>
 执行上述命令后结果如下</p>
 <pre class="notranslate"><code class="notranslate">root@debian 13:14 ➜  ~ virsh list --all

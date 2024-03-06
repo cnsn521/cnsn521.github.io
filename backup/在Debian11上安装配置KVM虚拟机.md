@@ -1,4 +1,4 @@
-**### 一、前提**
+###** 一、前提**
 
 检查是否满足虚拟化要求, 可以根据如下步骤验证:
 
@@ -7,7 +7,7 @@
 检查CPU类型: 如果是Intel的CPU, 输出VMX;如果是AMD的CPU, 输出SVM
 
 `grep -E --color '(vmx|svm)' /proc/cpuinfo`
-**### 二、安装相关包**
+###** 二、安装相关包**
 
 ```
 apt update
@@ -57,7 +57,7 @@ iface br0 inet dhcp
 systemctl restart networking.service
 ip a
 ```
-**### 四、从镜像创建虚拟机**
+###** 四、从镜像创建虚拟机**
 
 创建Linux虚拟机
 
@@ -117,7 +117,7 @@ virt-install \
 导出虚拟机为qcow2
 
 `virt-clone --original debian11 --name debian11-clone --file /var/lib/libvirt/images/debian11-clone.qcow2`
-**### 五、常见高级操作**
+### **五、常见高级操作**
 查看虚拟机
 `virsh list --all`
 执行上述命令后结果如下
