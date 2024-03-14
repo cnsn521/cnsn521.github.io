@@ -155,17 +155,23 @@ chmod +x tcp.sh
 <h2><a href="https://blog.ylx.me/archives/783.html" rel="nofollow">ylx大佬的锐速/BBRPLUS/BBR2</a></h2>
 <pre class="notranslate"><code class="notranslate">wget -O tcpx.sh "https://github.com/ylx2016/Linux-NetSpeed/raw/master/tcpx.sh" &amp;&amp; chmod +x tcpx.sh &amp;&amp; ./tcpx.sh
 </code></pre>
+<p>moerats大佬的添加swap脚本</p>
 <pre class="notranslate"><code class="notranslate">wget https://www.moerats.com/usr/shell/swap.sh &amp;&amp; bash swap.sh
 </code></pre>
+<p>spiritlhl大佬的zram内存压缩脚本</p>
 <pre class="notranslate"><code class="notranslate">curl -L https://raw.githubusercontent.com/spiritLHLS/addzram/main/addzram.sh -o addzram.sh &amp;&amp; chmod +x addzram.sh &amp;&amp; bash addzram.sh
 </code></pre>
+<p>cloudflare warp脚本 添加IPv4/IPv6网络</p>
 <pre class="notranslate"><code class="notranslate">wget -N https://raw.githubusercontent.com/fscarmen/warp/main/menu.sh &amp;&amp; bash menu.sh
 </code></pre>
+<p>fail2ban服务器ssh防爆破</p>
 <pre class="notranslate"><code class="notranslate">wget https://raw.githubusercontent.com/FunctionClub/Fail2ban/master/fail2ban.sh &amp;&amp; bash fail2ban.sh 2&gt;&amp;1 | tee fail2ban.log
 </code></pre>
+<p>独立服务器硬盘时间</p>
 <pre class="notranslate"><code class="notranslate">wget -q https://github.com/Aniverse/A/raw/i/a &amp;&amp; bash a
 </code></pre>
-<h2>Docker</h2>
+<h2>常用软件脚本<br>
+Docker</h2>
 <pre class="notranslate"><code class="notranslate">curl -sSL https://get.docker.com/ | sh
 </code></pre>
 <h2>Aria2一键安装脚本</h2>
@@ -176,15 +182,19 @@ chmod +x tcp.sh
 </code></pre>
 <h2>qbittorrent 4.3.9</h2>
 <p><a href="https://hostloc.com/thread-1024684-1-1.html" rel="nofollow">安装教程</a></p>
-<p><a href="https://archives.vip/vps-price.php" rel="nofollow">VPS剩余价值计算器</a></p>
+<p><a href="https://archives.vip/vps-price.php" rel="nofollow">VPS剩余价值计算器</a><br>
+宝塔一键挂载硬盘脚本</p>
 <pre class="notranslate"><code class="notranslate">wget -O auto_disk.sh http://download.bt.cn/tools/auto_disk.sh &amp;&amp; bash auto_disk.sh
 </code></pre>
+<p>acme生成免费证书</p>
 <pre class="notranslate"><code class="notranslate">curl https://get.acme.sh | sh
 </code></pre>
+<p>剑皇刷流量脚本</p>
 <pre class="notranslate"><code class="notranslate">wget https://cdn.jsdelivr.net/gh/maintell/webBenchmark@releases/download/0.6/webBenchmark_linux_x64
 chmod +x webBenchmark_linux_x64
 ./webBenchmark_linux_x64 -c 64 -s http://链接.jpg
 </code></pre>
+<p>腾讯云删除监控</p>
 <pre class="notranslate"><code class="notranslate">sudo -i
 systemctl stop tat_agent
 systemctl disable tat_agent
@@ -205,8 +215,10 @@ do
   done
 done
 </code></pre>
+<p>测试 25 端口是否开放</p>
 <pre class="notranslate"><code class="notranslate">telnet smtp.aol.com 25
 </code></pre>
+<p>测试 IPv4 优先还是 IPv6 优先</p>
 <pre class="notranslate"><code class="notranslate">curl ip.p3terx.com
 </code></pre></div>
 <div style="font-size:small;margin-top:8px;float:right;"></div>
