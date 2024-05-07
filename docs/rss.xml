@@ -1,5 +1,22 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<rss xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" version="2.0"><channel><title>寸衫的个人笔记</title><link>https://cnsn521.github.io</link><description>童话是一种生活态度，仅此而已。</description><copyright>寸衫的个人笔记</copyright><docs>http://www.rssboard.org/rss-specification</docs><generator>python-feedgen</generator><image><url>https://img2.imgtp.com/2024/03/14/Zv6AQqce.ico</url><title>avatar</title><link>https://cnsn521.github.io</link></image><lastBuildDate>Sun, 28 Apr 2024 05:10:49 +0000</lastBuildDate><managingEditor>寸衫的个人笔记</managingEditor><ttl>60</ttl><webMaster>寸衫的个人笔记</webMaster><item><title>Debian 如何修改默认网卡为 eth0</title><link>https://cnsn521.github.io/post/Debian%20-ru-he-xiu-gai-mo-ren-wang-qia-wei-%20eth0.html</link><description>[Debian](https://www.debian.cn/tag/debian/) 系统安装以后，可能会遇到网卡设备名不是常见的 eth0 的情况。</description><guid isPermaLink="true">https://cnsn521.github.io/post/Debian%20-ru-he-xiu-gai-mo-ren-wang-qia-wei-%20eth0.html</guid><pubDate>Sun, 28 Apr 2024 05:07:39 +0000</pubDate></item><item><title>利用windbg简单调试dump文件</title><link>https://cnsn521.github.io/post/li-yong-windbg-jian-dan-diao-shi-dump-wen-jian.html</link><description>
+<rss xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" version="2.0"><channel><title>寸衫的个人笔记</title><link>https://cnsn521.github.io</link><description>童话是一种生活态度，仅此而已。</description><copyright>寸衫的个人笔记</copyright><docs>http://www.rssboard.org/rss-specification</docs><generator>python-feedgen</generator><image><url>https://img2.imgtp.com/2024/03/14/Zv6AQqce.ico</url><title>avatar</title><link>https://cnsn521.github.io</link></image><lastBuildDate>Tue, 07 May 2024 16:08:52 +0000</lastBuildDate><managingEditor>寸衫的个人笔记</managingEditor><ttl>60</ttl><webMaster>寸衫的个人笔记</webMaster><item><title>(2023.12.13)SHELL脚本：一键给PVE增加温度,cpu功耗频率,硬盘等信息-软路由,x86系统,openwrt(x86),Router OS 等-恩山无线论坛</title><link>https://cnsn521.github.io/post/%282023.12.13%29SHELL-jiao-ben-%EF%BC%9A-yi-jian-gei-PVE-zeng-jia-wen-du-%2Ccpu-gong-hao-pin-lv-%2C-ying-pan-deng-xin-xi---ruan-lu-you-%2Cx86-xi-tong-%2Copenwrt%28x86%29%2CRouter%20OS%20-deng---en-shan-wu-xian-lun-tan.html</link><description>_本帖最后由 a904055262 于 2023-12-13 20:32 编辑_ **脚本自动检测：_一键给PVE增加温度和cpu频率显示，NVME，机械固态硬盘信息_**  
+
+*   **理论上适合任何设备**
+*   **自动适配传感器数据**
+*   **自动检测NVME硬盘数量**
+*   **自动检测机械，固态硬盘数量**
+*   **自动检测CPU核心数量**  
+    
+
+ ![](https://www.right.com.cn/forum/data/attachment/forum/202309/05/001940k7am1fdi0ci0cccp.jpg) 使用方法：  
+可以一键执行下面：
+
+1.  (curl -Lf -o /tmp/temp.sh https://raw.githubusercontent.com/a904055262/PVE-manager-status/main/showtempcpufreq.sh || curl -Lf -o /tmp/temp.sh https://mirror.ghproxy.com/https://raw.githubusercontent.com/a904055262/PVE-manager-status/main/showtempcpufreq.sh) &amp;&amp; chmod +x /tmp/temp.sh &amp;&amp; /tmp/temp.sh remod  
+    
+
+_复制代码_
+
+**没有显示功耗的，请执行下面的命令安装依赖，请确保安装成功，就是最后的一行的输出，必须为 “成功!” 才表示安装成功了。</description><guid isPermaLink="true">https://cnsn521.github.io/post/%282023.12.13%29SHELL-jiao-ben-%EF%BC%9A-yi-jian-gei-PVE-zeng-jia-wen-du-%2Ccpu-gong-hao-pin-lv-%2C-ying-pan-deng-xin-xi---ruan-lu-you-%2Cx86-xi-tong-%2Copenwrt%28x86%29%2CRouter%20OS%20-deng---en-shan-wu-xian-lun-tan.html</guid><pubDate>Tue, 07 May 2024 08:03:26 +0000</pubDate></item><item><title>Debian 如何修改默认网卡为 eth0</title><link>https://cnsn521.github.io/post/Debian%20-ru-he-xiu-gai-mo-ren-wang-qia-wei-%20eth0.html</link><description>[Debian](https://www.debian.cn/tag/debian/) 系统安装以后，可能会遇到网卡设备名不是常见的 eth0 的情况。</description><guid isPermaLink="true">https://cnsn521.github.io/post/Debian%20-ru-he-xiu-gai-mo-ren-wang-qia-wei-%20eth0.html</guid><pubDate>Sun, 28 Apr 2024 05:07:39 +0000</pubDate></item><item><title>利用windbg简单调试dump文件</title><link>https://cnsn521.github.io/post/li-yong-windbg-jian-dan-diao-shi-dump-wen-jian.html</link><description>
 
 1\. [dump](https://so.csdn.net/so/search?q=dump&amp;spm=1001.2101.3001.7020)文件生成
 ----------------------------------------------------------------------------
