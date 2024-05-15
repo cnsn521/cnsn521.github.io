@@ -9,7 +9,22 @@
         let theme = localStorage.getItem("meek_theme") || "light";
         document.documentElement.setAttribute("data-color-mode", theme);
     </script>
-<meta name="description" content="利用windbg简单调试dump文件">
+<meta name="description" content="
+
+1\. [dump](https://so.csdn.net/so/search?q=dump&spm=1001.2101.3001.7020)文件生成
+----------------------------------------------------------------------------
+
+利用下面程序（debug x86编译，release模式下需修改工程部分配置以生成pdb信息），模拟程序崩溃。">
+<meta property="og:title" content="利用windbg简单调试dump文件">
+<meta property="og:description" content="
+
+1\. [dump](https://so.csdn.net/so/search?q=dump&spm=1001.2101.3001.7020)文件生成
+----------------------------------------------------------------------------
+
+利用下面程序（debug x86编译，release模式下需修改工程部分配置以生成pdb信息），模拟程序崩溃。">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://cnsn521.github.io/post/li-yong-windbg-jian-dan-diao-shi-dump-wen-jian.html">
+<meta property="og:image" content="https://img2.imgtp.com/2024/03/14/Zv6AQqce.ico">
 <title>利用windbg简单调试dump文件</title>
 
 

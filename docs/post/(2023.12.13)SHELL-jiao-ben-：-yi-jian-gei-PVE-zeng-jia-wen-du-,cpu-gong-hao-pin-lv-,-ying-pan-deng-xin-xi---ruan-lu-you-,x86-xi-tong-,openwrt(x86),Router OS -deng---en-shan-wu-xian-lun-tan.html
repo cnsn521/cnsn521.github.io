@@ -9,7 +9,46 @@
         let theme = localStorage.getItem("meek_theme") || "light";
         document.documentElement.setAttribute("data-color-mode", theme);
     </script>
-<meta name="description" content="(2023.12.13)SHELL脚本：一键给PVE增加温度,cpu功耗频率,硬盘等信息-软路由,x86系统,openwrt(x86),Router OS 等-恩山无线论坛">
+<meta name="description" content="_本帖最后由 a904055262 于 2023-12-13 20:32 编辑_ **脚本自动检测：_一键给PVE增加温度和cpu频率显示，NVME，机械固态硬盘信息_**  
+
+*   **理论上适合任何设备**
+*   **自动适配传感器数据**
+*   **自动检测NVME硬盘数量**
+*   **自动检测机械，固态硬盘数量**
+*   **自动检测CPU核心数量**  
+    
+
+ ![](https://www.right.com.cn/forum/data/attachment/forum/202309/05/001940k7am1fdi0ci0cccp.jpg) 使用方法：  
+可以一键执行下面：
+
+1.  (curl -Lf -o /tmp/temp.sh https://raw.githubusercontent.com/a904055262/PVE-manager-status/main/showtempcpufreq.sh || curl -Lf -o /tmp/temp.sh https://mirror.ghproxy.com/https://raw.githubusercontent.com/a904055262/PVE-manager-status/main/showtempcpufreq.sh) && chmod +x /tmp/temp.sh && /tmp/temp.sh remod  
+    
+
+_复制代码_
+
+**没有显示功耗的，请执行下面的命令安装依赖，请确保安装成功，就是最后的一行的输出，必须为 “成功!” 才表示安装成功了。">
+<meta property="og:title" content="(2023.12.13)SHELL脚本：一键给PVE增加温度,cpu功耗频率,硬盘等信息-软路由,x86系统,openwrt(x86),Router OS 等-恩山无线论坛">
+<meta property="og:description" content="_本帖最后由 a904055262 于 2023-12-13 20:32 编辑_ **脚本自动检测：_一键给PVE增加温度和cpu频率显示，NVME，机械固态硬盘信息_**  
+
+*   **理论上适合任何设备**
+*   **自动适配传感器数据**
+*   **自动检测NVME硬盘数量**
+*   **自动检测机械，固态硬盘数量**
+*   **自动检测CPU核心数量**  
+    
+
+ ![](https://www.right.com.cn/forum/data/attachment/forum/202309/05/001940k7am1fdi0ci0cccp.jpg) 使用方法：  
+可以一键执行下面：
+
+1.  (curl -Lf -o /tmp/temp.sh https://raw.githubusercontent.com/a904055262/PVE-manager-status/main/showtempcpufreq.sh || curl -Lf -o /tmp/temp.sh https://mirror.ghproxy.com/https://raw.githubusercontent.com/a904055262/PVE-manager-status/main/showtempcpufreq.sh) && chmod +x /tmp/temp.sh && /tmp/temp.sh remod  
+    
+
+_复制代码_
+
+**没有显示功耗的，请执行下面的命令安装依赖，请确保安装成功，就是最后的一行的输出，必须为 “成功!” 才表示安装成功了。">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://cnsn521.github.io/post/%282023.12.13%29SHELL-jiao-ben-%EF%BC%9A-yi-jian-gei-PVE-zeng-jia-wen-du-%2Ccpu-gong-hao-pin-lv-%2C-ying-pan-deng-xin-xi---ruan-lu-you-%2Cx86-xi-tong-%2Copenwrt%28x86%29%2CRouter%20OS%20-deng---en-shan-wu-xian-lun-tan.html">
+<meta property="og:image" content="https://img2.imgtp.com/2024/03/14/Zv6AQqce.ico">
 <title>(2023.12.13)SHELL脚本：一键给PVE增加温度,cpu功耗频率,硬盘等信息-软路由,x86系统,openwrt(x86),Router OS 等-恩山无线论坛</title>
 
 
