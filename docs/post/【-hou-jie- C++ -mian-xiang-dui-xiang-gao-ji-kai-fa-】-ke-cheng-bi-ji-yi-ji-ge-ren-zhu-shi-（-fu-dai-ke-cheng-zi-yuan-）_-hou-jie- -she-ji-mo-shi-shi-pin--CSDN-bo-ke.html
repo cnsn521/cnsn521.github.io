@@ -1,0 +1,969 @@
+<!DOCTYPE html>
+<html data-color-mode="light" data-dark-theme="dark" data-light-theme="light" lang="zh-CN">
+<head>
+    <meta content="text/html; charset=utf-8" http-equiv="content-type" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link href='https://mirrors.sustech.edu.cn/cdnjs/ajax/libs/Primer/21.0.7/primer.css' rel='stylesheet' />
+    
+    <link rel="icon" href="https://img2.imgtp.com/2024/03/14/Zv6AQqce.ico"><script>
+        let theme = localStorage.getItem("meek_theme") || "light";
+        document.documentElement.setAttribute("data-color-mode", theme);
+    </script>
+<meta name="description" content="### 当前安排
+
+1.  先重拾基础。">
+<meta property="og:title" content="【侯捷 C++ 面向对象高级开发】课程笔记以及个人注释（附带课程资源）_侯捷 设计模式视频-CSDN博客">
+<meta property="og:description" content="### 当前安排
+
+1.  先重拾基础。">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://cnsn521.github.io/post/%E3%80%90-hou-jie-%20C%2B%2B%20-mian-xiang-dui-xiang-gao-ji-kai-fa-%E3%80%91-ke-cheng-bi-ji-yi-ji-ge-ren-zhu-shi-%EF%BC%88-fu-dai-ke-cheng-zi-yuan-%EF%BC%89_-hou-jie-%20-she-ji-mo-shi-shi-pin--CSDN-bo-ke.html">
+<meta property="og:image" content="https://img2.imgtp.com/2024/03/14/Zv6AQqce.ico">
+<title>【侯捷 C++ 面向对象高级开发】课程笔记以及个人注释（附带课程资源）_侯捷 设计模式视频-CSDN博客</title>
+
+
+
+</head>
+<style>
+body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;padding: 45px;font-size: 16px;font-family: sans-serif;line-height: 1.25;}
+#header{display:flex;padding-bottom:8px;border-bottom: 1px solid var(--borderColor-muted, var(--color-border-muted));margin-bottom: 16px;}
+#footer {margin-top:64px; text-align: center;font-size: small;}
+
+</style>
+
+<style>
+.postTitle{margin: auto 0;font-size:40px;font-weight:bold;}
+.title-right{display:flex;margin:auto 0 0 auto;}
+.title-right .circle{padding: 14px 16px;margin-right:8px;}
+#postBody{border-bottom: 1px solid var(--color-border-default);padding-bottom:36px;}
+#postBody hr{height:2px;}
+#cmButton{height:48px;margin-top:48px;}
+#comments{margin-top:64px;}
+.g-emoji{font-size:24px;}
+@media (max-width: 600px) {
+    body {padding: 8px;}
+    .postTitle{font-size:24px;}
+}
+.copy-feedback {
+    display: none;
+    position: absolute;
+    top: 10px;
+    right: 50px;
+    color: var(--color-fg-on-emphasis);
+    background-color: var(--color-fg-muted);
+    border-radius: 3px;
+    padding: 5px 8px;
+    font-size: 12px;
+}
+</style>
+
+
+
+
+<body>
+    <div id="header">
+<h1 class="postTitle">【侯捷 C++ 面向对象高级开发】课程笔记以及个人注释（附带课程资源）_侯捷 设计模式视频-CSDN博客</h1>
+<div class="title-right">
+    <a href="https://cnsn521.github.io" id="buttonHome" class="btn btn-invisible circle" title="首页">
+        <svg class="octicon" width="16" height="16">
+            <path id="pathHome" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+    
+    <a href="https://github.com/cnsn521/cnsn521.github.io/issues/17" target="_blank" class="btn btn-invisible circle" title="Issue">
+        <svg class="octicon" width="16" height="16">
+            <path id="pathIssue" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+    
+
+    <a class="btn btn-invisible circle" onclick="modeSwitch();" title="切换主题">
+        <svg class="octicon" width="16" height="16" >
+            <path id="themeSwitch" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+
+</div>
+</div>
+    <div id="content">
+<div class="markdown-body" id="postBody"><h3>当前安排</h3>
+<ol>
+<li>
+<p>先重拾基础。《C++ primer》/《Effective C++》 / 侯接视频。**21年底前完成所有的基础工作。一共两个多月。**C++ primer工具书也再次浏览了一遍，大而广的东西没能够深入，因为没有应用场景，因此这个工具书待到遇到再回来看看。</p>
+</li>
+<li>
+<p>深入[<a href="https://so.csdn.net/so/search?q=%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE&amp;spm=1001.2101.3001.7020" rel="nofollow">开源项目</a>](<a href="https://so.csdn.net/so/search?q=%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE&amp;spm=1001.2101.3001.7020)%E3%80%82Redis/Muduo%E7%AD%89%E3%80%82%E5%B0%86%E5%9C%A8%E4%B8%8B%E5%B9%B4%E6%B7%B1%E5%85%A5%E8%BF%9B%E8%A1%8C%EF%BC%8C%E8%BF%99%E5%B9%B4%E5%8F%AA%E6%98%AF%E5%A4%A7%E6%A6%82%E7%9C%8B%E7%9C%8B%E3%80%82" rel="nofollow">https://so.csdn.net/so/search?q=%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE&amp;spm=1001.2101.3001.7020)。Redis/Muduo等。将在下年深入进行，这年只是大概看看。</a></p>
+</li>
+</ol>
+<p>兼顾好实验室项目以及课程的同时，尽量抽时间完成。加油。</p>
+<hr>
+<h2>本篇内容</h2>
+<p>本篇记录的是【侯捷 - C++[<a href="https://so.csdn.net/so/search?q=%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1&amp;spm=1001.2101.3001.7020" rel="nofollow">面向对象</a>](<a href="https://so.csdn.net/so/search?q=%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1&amp;spm=1001.2101.3001.7020)%E9%AB%98%E7%BA%A7%E5%BC%80%E5%8F%91%E3%80%91%E5%85%A5%E9%97%A8%E8%AF%BE%E7%A8%8B%E3%80%82" rel="nofollow">https://so.csdn.net/so/search?q=%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1&amp;spm=1001.2101.3001.7020)高级开发】入门课程。</a></p>
+<p>本课程一共是上下两部分，上部分主要讲基础的OOP思想以及方法，下部分是深入的解析。总课时估计是十来小时，放在四五天学习会挺舒服的。</p>
+<hr>
+<h3>侯捷视频资源</h3>
+<p>源自公众号：编程指北</p>
+<p>链接: <a href="https://pan.baidu.com/s/19REVrk-%5C_3lpQu%5C_fUmRBRUw" rel="nofollow">https://pan.baidu.com/s/19REVrk-\_3lpQu\_fUmRBRUw</a> 密码: 7iup</p>
+<p>或有条件也可以直接访问Youtube资源。</p>
+<hr>
+<h2>篇2 头文件与类的声明</h2>
+<h3>为什么面向对象</h3>
+<p>将数据和函数方法绑定在一起，方便（方法整合到了一起）、安全且隐私（数据不被观察）。</p>
+<h3>Header防卫式声明</h3>
+<p>多个文件引入头部文件的时候，避免重复定义。</p>
+<p>攥写方法如下：</p>
+<p><strong>complex.h</strong></p>
+<pre class="notranslate"><code class="notranslate">#ifndef __COMPLEX__ 
+#define __COMPLEX__
+
+#endif 
+</code></pre>
+<h3>Header布局</h3>
+<p><strong>前置声明、类声明、类定义。</strong></p>
+<pre class="notranslate"><code class="notranslate">class ostream;
+class complex;
+
+class complex{};
+
+complex::function(){
+
+}
+</code></pre>
+<h3>类模板</h3>
+<p>希望类中某个属性不直接绑定内置类型，因此直接把类型抽象成一个模板。</p>
+<pre class="notranslate"><code class="notranslate">template&lt;typename T&gt;
+class complex{
+public:
+	complex(T a,T b):re(a),im(b){}
+private:
+	T re,im;
+};
+
+complex&lt;double&gt; c2(2.5,1.5)
+complex&lt;int&gt; c1(2,6)
+</code></pre>
+<hr>
+<h2>篇3 构造函数</h2>
+<h3>inline 内联函数</h3>
+<p>如果函数在<strong>class内</strong>定义完成，则会成为inline函数（但要求函数简单，编译器不拒绝）。</p>
+<p>但某些复杂函数无法inline，编译器会拒绝。</p>
+<h3>access level 访问级别</h3>
+<p>public / private</p>
+<p>建议所有的数据都放在private。</p>
+<h3>构造函数</h3>
+<h4>构造函数的通常写法</h4>
+<p>构造函数的函数名称与类一致。无返回值。</p>
+<p>另外，不带指针的类通常不需要写析构函数。</p>
+<pre class="notranslate"><code class="notranslate">complex(double r = 0,double i = 0):
+	re(r), im(i){	}
+	
+
+complex(double r = 0,double i = 0)
+	{	re = r ; im = i; }
+</code></pre>
+<h4>支持重载，<strong>但是不可以让编译器产生歧义，即入两个函数都可以（等价可以）</strong></h4>
+<p>重载不仅指入参可以不一样，出参也可以不一样。</p>
+<p>用作成员set和用作get的函数名可以一致。</p>
+<pre class="notranslate"><code class="notranslate">double real() const{return re;}
+
+void real(double r){re = r;}
+</code></pre>
+<pre class="notranslate"><code class="notranslate">complex(double r = 0,double i = 0):
+	re(r), im(i){	}
+
+complex():
+	re(0), im(0){	}
+</code></pre>
+<h4>Singleton 单例模式</h4>
+<p>把构造函数放在private，就不能被公共创造。</p>
+<pre class="notranslate"><code class="notranslate">class A{
+public:
+	static A&amp; getInstance();
+	setup(){...}
+private:
+	A(); 
+	A(const A&amp; rhs); 
+}
+
+A&amp; A::getInstance(){
+	static A a;
+	return a;
+}
+</code></pre>
+<hr>
+<h2>篇4 参数传递与返回值</h2>
+<h3>const member functions 常量成员函数</h3>
+<p>定义函数的时候，不希望该函数有修改成员值的权力，就加const限定词。</p>
+<pre class="notranslate"><code class="notranslate">double real() const{ reutrn re; }
+</code></pre>
+<h3>参数传递：pass by value vs. pass by reference(to const)</h3>
+<p>尽量传ref。</p>
+<p>传value是复制了一份数据到栈上。</p>
+<p>传ref是直接传引用（引用的地步就是指针，四个字节）。</p>
+<p>所以传ref快，<strong>而且方便改值</strong>（尽管传char可能更小，一个字节，但是没必要这么细，通常来说传ref快）。当然如果希望不被改值，加const关键词。</p>
+<pre class="notranslate"><code class="notranslate">complex&amp; operator += (const complex&amp;);
+</code></pre>
+<h3>返回值传递：return by value vs. return by reference(to const)</h3>
+<p><strong>尽量返ref。</strong></p>
+<h3>friend 友元</h3>
+<p>通常封装数据之后，外部都无法访问数据。**但是友元可以。**事实上友元有点违反封装的设计原理。</p>
+<pre class="notranslate"><code class="notranslate">class complex{
+    
+private:
+    
+    friend complex&amp; __doapl(complex*,const complex&amp; r);
+}
+
+inline complex&amp;
+    __doapl(complex* ths, const complex&amp; r){
+    ths-&gt;re += r.re; 
+    this-&gt;im += r.im;
+    return *ths; 
+}
+</code></pre>
+<h4>相同class的各个objects互为friends</h4>
+<p>相同class的各个objects互为friends。即同类的objects可以互相访问private data。</p>
+<hr>
+<h2>篇5 操作符重载 operator overloading</h2>
+<h3>成员函数版本 含this</h3>
+<p><strong>因此需要在类中写好定义。</strong></p>
+<p>使用场景</p>
+<pre class="notranslate"><code class="notranslate">complex c1;
+complex c2;
+c1 += c2;
+
+complex c3;
+c3 += c2 += c1;
+</code></pre>
+<p>则实现方式：</p>
+<pre class="notranslate"><code class="notranslate">inline complex&amp; complex::operator += (const complex&amp; r){
+	return __doapl(this,r);
+}
+</code></pre>
+<p>这里隐藏了操作符的左操作数，是this，参数列表中不需要显式写出，可以直接使用。</p>
+<h3>非成员函数版本 不含this</h3>
+<h4>二元加法</h4>
+<p>使用场景</p>
+<pre class="notranslate"><code class="notranslate">complex c1;
+complex c2;
+
+c2 = c1 + c2;
+c2 = c1 + 5;
+c2 = 7 + c1;
+</code></pre>
+<p>则实现方式：</p>
+<p>这个绝对不可以返回reference，因为相加的object一定是新建且是local的。因此需要创建临时对象（无名称，只在当前行有用）返回。<code class="notranslate">临时对象的内存地址与return出去后的内存地址一致吗？</code></p>
+<h4>一元正负</h4>
+<p>使用场景</p>
+<pre class="notranslate"><code class="notranslate">complex c1;
++c1;
+-c1; 
+</code></pre>
+<p>实现方法</p>
+<pre class="notranslate"><code class="notranslate">inline complex&amp;
+operator +(const complex&amp; x){
+	return x;
+}
+
+inline complex&amp;
+operator -(const complex&amp; x){
+	return complex(-real(x),-imag(x));
+}
+</code></pre>
+<h4>二元判断是否相等，是否不等</h4>
+<p>使用场景</p>
+<pre class="notranslate"><code class="notranslate">complex c1;
+complex c2;
+
+c1 == c2;
+c1 == 0;
+0 == c1; 
+</code></pre>
+<h5>比较相等</h5>
+<p><a target="_blank" rel="noopener noreferrer nofollow" href="https://camo.githubusercontent.com/bc6e472a8370c62234b9c7411f0b4ab9ee7ffd1b46cf263c2e179e2ae724df6f/68747470733a2f2f692d626c6f672e6373646e696d672e636e2f626c6f675f6d6967726174652f30326638616465303638343333346565363662643061383562363965353538642e706e67"><img src="https://camo.githubusercontent.com/bc6e472a8370c62234b9c7411f0b4ab9ee7ffd1b46cf263c2e179e2ae724df6f/68747470733a2f2f692d626c6f672e6373646e696d672e636e2f626c6f675f6d6967726174652f30326638616465303638343333346565363662643061383562363965353538642e706e67" alt="" data-canonical-src="https://i-blog.csdnimg.cn/blog_migrate/02f8ade0684334ee66bd0a85b69e558d.png" style="max-width: 100%;"></a></p>
+<h5>比较不等</h5>
+<p><a target="_blank" rel="noopener noreferrer nofollow" href="https://camo.githubusercontent.com/b0b065dac09312c139976c44558ba1a4ccba1523628570ec0478e4eb225f51a3/68747470733a2f2f692d626c6f672e6373646e696d672e636e2f626c6f675f6d6967726174652f64313163363135653061643366666638613932633138373131373133323433622e706e67"><img src="https://camo.githubusercontent.com/b0b065dac09312c139976c44558ba1a4ccba1523628570ec0478e4eb225f51a3/68747470733a2f2f692d626c6f672e6373646e696d672e636e2f626c6f675f6d6967726174652f64313163363135653061643366666638613932633138373131373133323433622e706e67" alt="" data-canonical-src="https://i-blog.csdnimg.cn/blog_migrate/d11c615e0ad3fff8a92c18711713243b.png" style="max-width: 100%;"></a></p>
+<h4>&lt;&lt;重载（std重载）</h4>
+<p>使用场景</p>
+<pre class="notranslate"><code class="notranslate">complex c1(2,1);
+cout &lt;&lt; c1; 
+cout &lt;&lt; c1 &lt;&lt; c1; 
+</code></pre>
+<p>实现方案</p>
+<pre class="notranslate"><code class="notranslate">#include &lt;iostream&gt;
+
+ostream&amp;
+operator &lt;&lt; (ostream&amp; os, const compelex&amp; x){
+    return os &lt;&lt; '(' &lt;&lt; real(x) &lt;&lt;',' &lt;&lt; imag(x) &lt;&lt; ')';
+}
+</code></pre>
+<p><strong>以上是经典案例1，complex，class without pointer member</strong></p>
+<p><strong>以上是经典案例2，string，class with pointer member</strong></p>
+<hr>
+<h2>篇7 Big Three：拷贝构造、拷贝赋值、析构</h2>
+<p>场景</p>
+<pre class="notranslate"><code class="notranslate">String s1();
+String s2("我是一个酒精过敏的帅哥");
+String s3(s1); 
+s3 = s2; 
+</code></pre>
+<h3>Big Three</h3>
+<h4>类声明</h4>
+<p>**如果成员函数含有指针，必须含有copy ctor和copy op=。*<em>否则如果使用默认的方法，只是潜赋值，会共用同一个底层的char</em>。</p>
+<pre class="notranslate"><code class="notranslate">class String {
+public:
+    String (const char* cstr = 0); 
+    String (const String&amp; str); 
+    String&amp; operator=(const String&amp; s); 
+    ~String(); 
+    char* get_c_str() const(return m_data); 
+private:
+    char* m_data;
+}
+</code></pre>
+<h4>constructor和destructor定义</h4>
+<pre class="notranslate"><code class="notranslate">inline 
+String::String(const char* cstr = 0){
+    if (cstr){
+        m_data = new char[strlen(cstr)+1];
+        strcpy(m_data,cstr);
+    }
+    else{ 
+        m_data = new char[1];
+        *m_data = '\0';
+    }
+}
+inline 
+String::~String(){
+    delete[] m_data;
+} 
+</code></pre>
+<h4>copy ctor（拷贝构造）</h4>
+<pre class="notranslate"><code class="notranslate">inline 
+String::String(const String&amp; str){
+    m_data = new char[str(str.m_data) + 1];
+    strcpy(m_data,str.m_data); 
+ }
+</code></pre>
+<h4>copy assignment operator(拷贝赋值函数)</h4>
+<pre class="notranslate"><code class="notranslate">inline
+String&amp; String::operator=(const String&amp; str){
+    if (this == &amp;str){ 
+        return *this;
+    }
+    delete[] m_data; 
+    m_data = new char[ strlen(str.m_data) + 1]; 
+    strcpy(m_data,str.m_data); 
+    return *this;
+} 
+</code></pre>
+<h2>篇8 栈stack、堆heap与内存管理</h2>
+<h3>堆栈说明</h3>
+<ul>
+<li>栈，存在于某个作用域。</li>
+<li>堆，全局内存空间，可动态分配内存。</li>
+</ul>
+<pre class="notranslate"><code class="notranslate">{
+    Complex c1(1,2); 
+    Complex* p = new Complex(3); 
+} 
+</code></pre>
+<h3>static local objects的生命周期</h3>
+<p>其生命在作用域结束后仍然存在</p>
+<pre class="notranslate"><code class="notranslate">{
+	static Complex c;
+} 
+</code></pre>
+<h3>global objects的生命周期</h3>
+<p>其生命一直存在，直到程序结束</p>
+<pre class="notranslate"><code class="notranslate">Complex c3; 
+int main{
+
+}
+</code></pre>
+<h3>heap objects的生命周期</h3>
+<p>存在，直到被delete掉。如果不delete则内存泄漏（即没有回收，且没有办法再手动回收）。</p>
+<pre class="notranslate"><code class="notranslate">{
+	Complex* p = new Complex;
+	
+	delete p;
+}
+</code></pre>
+<h4>new的过程</h4>
+<ol>
+<li><strong>先分配内存</strong>：使用malloc函数，大小为sizeof(对象大小)，对象大小是成员变量决定的，（与成员函数无关）。
+<ol>
+<li>如果创建单个对象：如Complex两个double，则8字节，<strong>头尾要加上cookie，表明该部分内存已经被占用，一个cookie为4个字节。即release下8+2*4 = 16字节（必须是16字节的倍数，如果不足则向上取整）。debug下就得再加32+4，其实没必要记。</strong></li>
+<li>如果创建对象数组：除了要n份成员变量以外，需要额外一个字节来记录数组的大小。**即如创建长度为3的Complex数组，release下：8 * 3（成员变量） +4 * 2 （cookie）+ 4 (记录长度) = 36 -&gt; 48 **</li>
+</ol>
+</li>
+<li>再调用构造函数</li>
+</ol>
+<h4>delete的过程</h4>
+<ol>
+<li>先<strong>调用析构函数</strong></li>
+<li>再<strong>释放内存</strong>：</li>
+</ol>
+<hr>
+<h2>篇10 类 拓展：模板、函数模板</h2>
+<h3>补充1：static</h3>
+<p><strong>全局空间</strong>会有一份类中的方法、静态成员变量、静态成员函数。而正常的成员变量会在初始化object的时候创建。</p>
+<ol>
+<li>
+<p>普通函数处理普通数据（需要传this pointer），当然也可以处理静态数据。</p>
+</li>
+<li>
+<p>静态函数不能处理普通数据，<strong>只能</strong>处理静态数据。</p>
+</li>
+<li>
+<p>静态数据除了在类里面做好生命，必须要在类外做好<strong>定义</strong>。</p>
+</li>
+<li>
+<p>Singleton中用到了静态变量(唯一的实例)、静态函数（get方法）。</p>
+<ol>
+<li>优化方案：去掉静态类变量，放在静态函数里面；这样只有有人调用get方法的时候，实例才会被创建。</li>
+</ol>
+</li>
+</ol>
+<pre class="notranslate"><code class="notranslate">class Account{
+publid:
+    static double m_rate;
+	static void set_rate(const double&amp; x){m_rate = x;}
+}
+double Account::m_rate = 8.0;
+
+int main)_{
+    Account::set_rate(5); 
+    Account().set_rate(5); 
+} 
+</code></pre>
+<h3>为什么cout可以接受那么多类型去输出</h3>
+<p>cout继承于ostream，标准库团队在ostream实现重载了大量类型的&lt;&lt;操作符。</p>
+<h3>function template，函数模板</h3>
+<p>使用场景：任意元素的比较大小，使用函数模板</p>
+<pre class="notranslate"><code class="notranslate">template &lt;class T&gt;
+    inline 
+    const T&amp; min(const T&amp;a,const T&amp;b ){
+    	return b&lt;a ? b:a;
+} 
+</code></pre>
+<p>当然如果自己设计的类要调用该函数，一定是需要自己重载&lt;操作符。</p>
+<pre class="notranslate"><code class="notranslate">class A{
+public:
+    bool operator &lt; (const stone&amp; rhs) cosnt{
+        return this.___&lt; ths.___;
+    }
+}
+</code></pre>
+<h3>namespace 命名空间</h3>
+<p>namespace是一个区域限制，相当于局部空间。可以如下使用：</p>
+<ol>
+<li>using directive</li>
+</ol>
+<pre class="notranslate"><code class="notranslate">using namespace directive
+</code></pre>
+<ol start="2">
+<li>using declaration</li>
+</ol>
+<pre class="notranslate"><code class="notranslate">using std::cout;
+cout&lt;&lt;"hello";
+
+std::cout&lt;&lt;"hello"; 
+</code></pre>
+<hr>
+<h2>篇11 组合、委托与继承</h2>
+<p>面向对象的三个重要特性：复合、委托、继承。</p>
+<h3>Composition 复合, has-a</h3>
+<p>一个类中，包含了另一个类，就叫复合。生命周期同步。</p>
+<p>如下，queue类里面包含了Sequence类。</p>
+<p><a target="_blank" rel="noopener noreferrer nofollow" href="https://camo.githubusercontent.com/4b9f1d5e18f2c54dffe2d926fa27ea1e0fb8e8d6d2ea9f75e362b60b16104991/68747470733a2f2f692d626c6f672e6373646e696d672e636e2f626c6f675f6d6967726174652f35653232376361326362336239333035333935636563666562616461393863652e706e67"><img src="https://camo.githubusercontent.com/4b9f1d5e18f2c54dffe2d926fa27ea1e0fb8e8d6d2ea9f75e362b60b16104991/68747470733a2f2f692d626c6f672e6373646e696d672e636e2f626c6f675f6d6967726174652f35653232376361326362336239333035333935636563666562616461393863652e706e67" alt="" data-canonical-src="https://i-blog.csdnimg.cn/blog_migrate/5e227ca2cb3b9305395cecfebada98ce.png" style="max-width: 100%;"></a></p>
+<pre class="notranslate"><code class="notranslate">template&lt;class T, class Sequence = deque&lt;T&gt;&gt;
+class queue{
+    
+protected:
+    Sequence c;
+}
+</code></pre>
+<h4>构造与析构的关系</h4>
+<p>假如Container has a Component.</p>
+<ol>
+<li><strong>构造由内而外。Container的构造西首先调用Component的default</strong> constructor，然后才执行自己的ctor。如果不想用deault，则需要自己构造Component.</li>
+<li><strong>析构由外而内。</strong></li>
+</ol>
+<h3>Delegation 委托，Composition by reference</h3>
+<p>一个类，仍然包含另一个类，但是不是通过内存直接包含，而是用一个指针包含。 <strong>生命周期不同步。</strong></p>
+<p>如下，String类委托了一个StringRep类。</p>
+<p><a target="_blank" rel="noopener noreferrer nofollow" href="https://camo.githubusercontent.com/13e41dec2ca9c0f6c1eb1f25f2e6fa161bbfda4fdb1ed48905dc81deb916156f/68747470733a2f2f692d626c6f672e6373646e696d672e636e2f626c6f675f6d6967726174652f31393537333138613066636261333739363737616533346335626166343931322e706e67"><img src="https://camo.githubusercontent.com/13e41dec2ca9c0f6c1eb1f25f2e6fa161bbfda4fdb1ed48905dc81deb916156f/68747470733a2f2f692d626c6f672e6373646e696d672e636e2f626c6f675f6d6967726174652f31393537333138613066636261333739363737616533346335626166343931322e706e67" alt="" data-canonical-src="https://i-blog.csdnimg.cn/blog_migrate/1957318a0fcba379677ae34c5baf4912.png" style="max-width: 100%;"></a></p>
+<pre class="notranslate"><code class="notranslate">class StringRep;
+class String{
+    
+private:
+    StringRep* rep; 
+}
+</code></pre>
+<p>委托可以对外接口一致，String接口永远不变，但是内部实现可以通过修改StringRep改变。</p>
+<h3>Inheritance 继承，is-a</h3>
+<p>类A是类B，则类A继承类B。这个关系清晰易懂，用显示情况get<a target="_blank" rel="noopener noreferrer nofollow" href="https://camo.githubusercontent.com/a414a9adeeb12850ec22fa9019750f5b12cd799023d868a6357a3e30f451933e/68747470733a2f2f692d626c6f672e6373646e696d672e636e2f626c6f675f6d6967726174652f66613234663732656434636362626662393839393036376139636633656561392e706e67"><img src="https://camo.githubusercontent.com/a414a9adeeb12850ec22fa9019750f5b12cd799023d868a6357a3e30f451933e/68747470733a2f2f692d626c6f672e6373646e696d672e636e2f626c6f675f6d6967726174652f66613234663732656434636362626662393839393036376139636633656561392e706e67" alt="" data-canonical-src="https://i-blog.csdnimg.cn/blog_migrate/fa24f72ed4ccbbfb9899067a9cf3eea9.png" style="max-width: 100%;"></a></p>
+<h4>构造和析构</h4>
+<ol>
+<li>**构造由内而外。**Derived的构造函数首先调用Base的default构造函数，然后才执行自己。</li>
+<li><strong>析构由外而内。</strong></li>
+</ol>
+<h4>继承 with 虚函数 virtual functions</h4>
+<h5>虚函数</h5>
+<ul>
+<li>虚函数：如果希望子类重新定义，则可以把函数声明为虚函数，但同时你需要自己写一个默认定义。</li>
+<li>纯虚函数：自己不给默认，希望子类一定去定义。</li>
+</ul>
+<pre class="notranslate"><code class="notranslate">class Shape{
+public:
+	virtual void draw() const = 0; 
+    vitual void error(const std::string&amp; msg); 
+    int objectID() const; 
+} 
+</code></pre>
+<h3>委托+继承 经典案例</h3>
+<h4>经典案例1（设计模式Observer）</h4>
+<p>课程说了一个经典案例，多个Obsever观察同一个数据/文档。每个Observer都有自己对数据的显示方式。</p>
+<p><a target="_blank" rel="noopener noreferrer nofollow" href="https://camo.githubusercontent.com/b95c34fe1640d2a4d799dbd823b6f0ff3fda322eb5f5ea31bb63ef6d70b722cb/68747470733a2f2f692d626c6f672e6373646e696d672e636e2f626c6f675f6d6967726174652f62363131646566656266313830396166653733346532623530623037363637302e706e67"><img src="https://camo.githubusercontent.com/b95c34fe1640d2a4d799dbd823b6f0ff3fda322eb5f5ea31bb63ef6d70b722cb/68747470733a2f2f692d626c6f672e6373646e696d672e636e2f626c6f675f6d6967726174652f62363131646566656266313830396166653733346532623530623037363637302e706e67" alt="" data-canonical-src="https://i-blog.csdnimg.cn/blog_migrate/b611defebf1809afe734e2b50b076670.png" style="max-width: 100%;"></a></p>
+<p>代码如下：</p>
+<pre class="notranslate"><code class="notranslate">class Subject{
+   int m_value; 
+   vector&lt;Observer*&gt; m_views; 
+public:
+   void attach(Observer* obs){
+       m_views.push_back(obs);
+   }
+   
+   
+   void set_val(int value){
+       m_value = value;
+       notify();
+   }
+   
+   void notify(){
+       for(int i=0;i&lt;m_views.size();++i)
+           m_views[i]-&gt;update(this,m_value); 
+   }
+}
+
+class Observer{
+public:
+   virtual void update(Subject* sub,int value) = 0; 
+} 
+</code></pre>
+<h4>经典案例1（设计模式Composite）</h4>
+<p>尚未感受到有多厉害，截个图把。</p>
+<p><a target="_blank" rel="noopener noreferrer nofollow" href="https://camo.githubusercontent.com/c0417d74236cf6dca4c6b85ba828fffb77169f2c74c469481ec220cc7ded9264/68747470733a2f2f692d626c6f672e6373646e696d672e636e2f626c6f675f6d6967726174652f33333565666562653665636336333433623261346338363237353736353766372e706e67"><img src="https://camo.githubusercontent.com/c0417d74236cf6dca4c6b85ba828fffb77169f2c74c469481ec220cc7ded9264/68747470733a2f2f692d626c6f672e6373646e696d672e636e2f626c6f675f6d6967726174652f33333565666562653665636336333433623261346338363237353736353766372e706e67" alt="" data-canonical-src="https://i-blog.csdnimg.cn/blog_migrate/335efebe6ecc6343b2a4c862757657f7.png" style="max-width: 100%;"></a></p>
+<h4>经典案例2（设计模式Prototype）</h4>
+<p><strong>父类</strong>想创建<strong>未来</strong>才定义的子类。同样还没感受到，截个图然后教程继续。</p>
+<p><a target="_blank" rel="noopener noreferrer nofollow" href="https://camo.githubusercontent.com/f5aafb68bd3d53e0a2de6826a35bc9739cedeec1395167cb06a6a8c2f3101ee1/68747470733a2f2f692d626c6f672e6373646e696d672e636e2f626c6f675f6d6967726174652f38656333386232623039663562343738376330326266326535353435383833302e706e67"><img src="https://camo.githubusercontent.com/f5aafb68bd3d53e0a2de6826a35bc9739cedeec1395167cb06a6a8c2f3101ee1/68747470733a2f2f692d626c6f672e6373646e696d672e636e2f626c6f675f6d6967726174652f38656333386232623039663562343738376330326266326535353435383833302e706e67" alt="" data-canonical-src="https://i-blog.csdnimg.cn/blog_migrate/8ec38b2b09f5b4787c02bf2e55458830.png" style="max-width: 100%;"></a></p>
+<hr>
+<h2>承上启下：兼谈对象模型</h2>
+<p>后面是“面向对象程序设计”的续集。会讨论：</p>
+<ul>
+<li>泛型编程、面向对象编程</li>
+<li>继承的深处：this指针，虚指针，虚表，虚机制。</li>
+</ul>
+<p>即讲述以下技术点</p>
+<p><a target="_blank" rel="noopener noreferrer nofollow" href="https://camo.githubusercontent.com/771309ca3e5feb16f2766995449167cc1f467860fcb25e47be3053ef0c02aa0e/68747470733a2f2f692d626c6f672e6373646e696d672e636e2f626c6f675f6d6967726174652f37343030353932313666353565396361356562646135353136353862623339312e706e67"><img src="https://camo.githubusercontent.com/771309ca3e5feb16f2766995449167cc1f467860fcb25e47be3053ef0c02aa0e/68747470733a2f2f692d626c6f672e6373646e696d672e636e2f626c6f675f6d6967726174652f37343030353932313666353565396361356562646135353136353862623339312e706e67" alt="" data-canonical-src="https://i-blog.csdnimg.cn/blog_migrate/740059216f55e9ca5ebda551658bb391.png" style="max-width: 100%;"></a></p>
+<hr>
+<h2>篇2 conversion function，转换函数</h2>
+<p>使用场景：我自定义一个类，表示分数，但是我希望它做加减乘除的时候，自动转为double。</p>
+<pre class="notranslate"><code class="notranslate">class Fraction{
+public:
+    ...
+    operator double() const{ 
+        return (double)(分子/分母);
+    }
+}
+
+Fraction my_frac(3,5);
+double d = 4 + my_frac;
+</code></pre>
+<h4>非explicit单实参构造函数 non-explicit-one-argument ctor</h4>
+<pre class="notranslate"><code class="notranslate">class Fraction{
+public:
+    Fraction(int num,int den=1):分子(num),分母(den){};
+    
+    Fraction operator+(const Fraction&amp; f){
+        return Fraction(...)
+    }
+}
+</code></pre>
+<p>我们的使用场景仍然和上面一样，希望<code class="notranslate">Fraction d = 4 + my_frac;</code> ，只需要把4隐式构造成Fraction，然后用操作符+相加起来。</p>
+<p>设计模式里面的【代理】，就用到了转换函数。</p>
+<h2>篇4 指针类 pointer-like classes</h2>
+<p>像指针的类，用起来跟指针一样，但是有更多的机制。</p>
+<p>链表的node也是一种pointer-like classes。真挺厉害的。</p>
+<p><a target="_blank" rel="noopener noreferrer nofollow" href="https://camo.githubusercontent.com/ce03a1bb0d02f8f6150c59d84579b54276b1f99533e345cc6df2f43777f886ea/68747470733a2f2f692d626c6f672e6373646e696d672e636e2f626c6f675f6d6967726174652f64616335343965363339633964303336666533653533313036353962636432652e706e67"><img src="https://camo.githubusercontent.com/ce03a1bb0d02f8f6150c59d84579b54276b1f99533e345cc6df2f43777f886ea/68747470733a2f2f692d626c6f672e6373646e696d672e636e2f626c6f675f6d6967726174652f64616335343965363339633964303336666533653533313036353962636432652e706e67" alt="" data-canonical-src="https://i-blog.csdnimg.cn/blog_migrate/dac549e639c9d036fe3e5310659bcd2e.png" style="max-width: 100%;"></a></p>
+<p>以下给出node的代码</p>
+<pre class="notranslate"><code class="notranslate">T&amp; reference operator*()const{
+    return (*node).data; 
+}
+
+T* pointer operator-&gt;() const{
+    return &amp;(operator*()); 
+}
+
+list&lt;Foo&gt;::iterator ite;
+*ite; 
+ite-&gt;method();
+</code></pre>
+<hr>
+<h2>篇5 仿函数 function-like classes</h2>
+<p>让一个类像函数被调用，只要实现()操作符即可。</p>
+<p>小小的类，用作base unit。</p>
+<hr>
+<h2>篇6 namespace经验谈</h2>
+<p>把区域分隔开。用<code class="notranslate">::</code>访问特定区域。</p>
+<hr>
+<h2>篇9 member template，成员模板</h2>
+<p>使用场景：更灵活地构造</p>
+<pre class="notranslate"><code class="notranslate">pair&lt;Derived1,Derived2&gt; p;
+pair&lt;Base1,Base2&gt;p2(p); //支持这种做法，就必须些成员模板。只能up-cast 
+</code></pre>
+<p><a target="_blank" rel="noopener noreferrer nofollow" href="https://camo.githubusercontent.com/32ca438e93ce1a4b359a6436530c0d84d00e112b4c80725e665a5c2469ad68f0/68747470733a2f2f692d626c6f672e6373646e696d672e636e2f626c6f675f6d6967726174652f32353238656139353736653763643438653363326337616539643636646533352e706e67"><img src="https://camo.githubusercontent.com/32ca438e93ce1a4b359a6436530c0d84d00e112b4c80725e665a5c2469ad68f0/68747470733a2f2f692d626c6f672e6373646e696d672e636e2f626c6f675f6d6967726174652f32353238656139353736653763643438653363326337616539643636646533352e706e67" alt="" data-canonical-src="https://i-blog.csdnimg.cn/blog_migrate/2528ea9576e7cd48e3c2c7ae9d66de35.png" style="max-width: 100%;"></a></p>
+<p>同时智能指针也实现了成员模板。</p>
+<hr>
+<h2>篇10 Specialization，模板特化</h2>
+<p>泛化模板覆盖很广，但是我们有时候需要针对某种类型，执行不同的操作。</p>
+<pre class="notranslate"><code class="notranslate">template&lt;class Key&gt;
+    struct hash{};
+
+template&lt;&gt;
+struct hash&lt;int&gt;{
+    size_t operator()(int x) cosnt{return x;}
+} 
+</code></pre>
+<hr>
+<h2>篇11 partial specialization，模板偏特化</h2>
+<p>这部分跟python的偏函数挺像的，就是对template泛化模板，偏特化某个模板参数 或者 修改范围。</p>
+<p>个数上的偏特化</p>
+<pre class="notranslate"><code class="notranslate">tempalte&lt;typenamte T, typename Alloc=...&gt;
+    class vector{
+      ...  
+    };
+
+tempalte&lt;typename Alloc=...&gt;{
+	...    
+}
+</code></pre>
+<p>范围上的偏特化</p>
+<pre class="notranslate"><code class="notranslate">temaplte&lt;typename T&gt;
+class C{
+	...
+};
+
+template&lt;typename U&gt;
+class C&lt;T*&gt;{
+    ...
+};
+
+c&lt;string&gt; obj1; 
+c&lt;string*&gt; obj2;
+</code></pre>
+<hr>
+<h2>篇12 template template parameter，模板模板参数</h2>
+<p>使用场景：希望自定义一个模板，嵌套另一个模板进行使用。</p>
+<p>这里有点深了，先有个印象然后跳过吧。</p>
+<pre class="notranslate"><code class="notranslate">template &lt;typename T,
+		template&lt;typename T&gt; class Container
+          &gt;
+class XCls{
+private:
+    Container&lt;t&gt; c;
+...
+}
+   
+//使用
+template&lt;typename T&gt;
+using Lst = list&lt;T,allocator&lt;T&gt;&gt;;
+Xcls&lt;string,Lst&gt;mylst2;
+</code></pre>
+<hr>
+<h2>篇13 如何确认当前cpp版本</h2>
+<p><code class="notranslate">cout&lt;&lt;__cpluscplus;</code> 如果输出201103，则表示是C++11。</p>
+<hr>
+<h2>篇14 c++的三个主题：可变参数</h2>
+<h3>variadic templates，可变模板</h3>
+<p>使用场景：使某函数接受任何多的参数。</p>
+<pre class="notranslate"><code class="notranslate">void print(){
+    
+}
+
+template&lt;typename T,typename... Types&gt;
+void print(const T&amp; firstArg,const Types&amp;... args){
+    cout&lt;&lt;firstArg&lt;&lt;endl;
+    cout&lt;&lt;sizeof...(args)&lt;&lt;endl; //这里就知道参数包的size大小
+    print(args...); //递归调用
+}
+
+//使用
+print(7.5,"hello",bitset&lt;16&gt;(377),42);
+</code></pre>
+<h3>auto</h3>
+<p>让编译器自动推导type。</p>
+<pre class="notranslate"><code class="notranslate">list&lt;string&gt; c;
+
+list&lt;string&gt;::iterator ite;
+ite = find(c.begin(),c.end(),target);
+
+auto ite = find(c.begin(),c.enmd(),target); 
+</code></pre>
+<h3>ranged-base for</h3>
+<p>新的循环方式，像Python一样。</p>
+<pre class="notranslate"><code class="notranslate">for (int i:{2,3,4,7}){
+    cout&lt;&lt;i&lt;&lt;endl;
+}
+
+vector&lt;double&gt; vec;
+for(const auto&amp; elem:vec){ 
+    cout&lt;&lt;elem&lt;&lt;endl;
+}
+</code></pre>
+<h2>篇15 reference 引用详解</h2>
+<p>特性：</p>
+<ol>
+<li>sizeof® = sizeof(x)，即引用大小与原来的<strong>元素大小一样，值也一样，地址也</strong>一样。（这是编译器做的封装，底层肯定是不一样的）。</li>
+</ol>
+<pre class="notranslate"><code class="notranslate">int x = 0;
+int* p = &amp;x; 
+int&amp; r = x; 
+
+int x2 = 5;
+r = x2; 
+int&amp; r2 = r; 
+</code></pre>
+<ol start="2">
+<li>引用比指针要优雅，而且可以使得接口调用的时候，保持一致（无论是否引用，都一致）。</li>
+</ol>
+<pre class="notranslate"><code class="notranslate">void f2(Cls obj){obj.xxx();}
+void f3(Cls&amp; objs){obj.xxx();} 
+
+f2(obj);
+f3(obj);
+</code></pre>
+<p><strong>另外，函数的const是否属于函数签名一部分呢？是的。</strong></p>
+<hr>
+<h2>篇17 关于vptr和vtbl</h2>
+<p>[<a href="https://www.youtube.com/watch?v=MysC48nh9yI&amp;list=PL-X74YXt4LVZ137kKM5dNfCIC4tsScerb&amp;index=29" rel="nofollow">高清 1080P C++面向对象高级编程（侯捷） P30 17 关于vptr和vtbl</a>](<a href="https://www.youtube.com/watch?v=MysC48nh9yI&amp;list=PL-X74YXt4LVZ137kKM5dNfCIC4tsScerb&amp;index=29" rel="nofollow">https://www.youtube.com/watch?v=MysC48nh9yI&amp;list=PL-X74YXt4LVZ137kKM5dNfCIC4tsScerb&amp;index=29</a>)</p>
+<p>只要类中有虚函数，就有vptr，它指向vtbl，表里面放的都是函数指针，指向内存里面的虚函数。</p>
+<p>这幅图画得非常非常清晰。</p>
+<p><a target="_blank" rel="noopener noreferrer nofollow" href="https://camo.githubusercontent.com/416361796b3942e396155af0fc39635e911c3e6031d565a8940d6151453053b0/68747470733a2f2f692d626c6f672e6373646e696d672e636e2f626c6f675f6d6967726174652f35363665303063376531633766363831303066623534333037643834353661302e706e67"><img src="https://camo.githubusercontent.com/416361796b3942e396155af0fc39635e911c3e6031d565a8940d6151453053b0/68747470733a2f2f692d626c6f672e6373646e696d672e636e2f626c6f675f6d6967726174652f35363665303063376531633766363831303066623534333037643834353661302e706e67" alt="" data-canonical-src="https://i-blog.csdnimg.cn/blog_migrate/566e00c7e1c7f68100fb54307d8456a0.png" style="max-width: 100%;"></a></p>
+<p>这个也就是实现<strong>多态</strong>的底层原理。</p>
+<hr>
+<h2>篇18 动态绑定</h2>
+<h3>关于静态绑定和动态绑定</h3>
+<p><strong>静态绑定</strong>直接访问内存里编译好的函数内存空间。</p>
+<p><strong>动态绑定</strong>调用三个条件：</p>
+<ol>
+<li>必须通过指针调用。<strong>（this指针调用即可满足）</strong></li>
+<li>必须是up-cast（子类向父类转型）<strong>（调用父类的函数即可满足）</strong></li>
+<li>必须调用的是虚函数 <strong>（父类需要动态绑定的函数定义为虚函数）</strong></li>
+</ol>
+<h3>底层勘探</h3>
+<p>假如A是B的父类，B是C的父类。</p>
+<pre class="notranslate"><code class="notranslate">B b;
+A a= (A)b; 
+a.vfunc1(); 
+
+
+A* pa = new B; 
+pa-&gt;vfunc1(); 
+</code></pre>
+<h2>篇19 谈谈const</h2>
+<p>这里Cpp primer这本书说得贼全，但是很复杂。侯老师说得比较精炼。</p>
+<p>当成员函数的const和non-const版本同时存在，<br>
+<strong>const object</strong> 智能调用<strong>const</strong>版本。<br>
+<strong>non-const object</strong>只能调用<strong>non-const</strong>版本。</p>
+<p>|  | const object<br>
+(data member不得改动) | non-const object<br>
+（data members可改动） |<br>
+| --- | --- | --- |<br>
+| const member functions<br>
+<strong>(保证不改变data members)</strong> | 允许 | 允许 |<br>
+| non-const member functions<br>
+<strong>(不保证 dat members不变)</strong> | 不允许 | 允许 |</p>
+<p>即<strong>常量对象无法调用非常量成员函数。</strong></p>
+<h4>COW: Copy and Write</h4>
+<p>当重载[]操作符的时候，设计两个函数，</p>
+<ol>
+<li>const member function不必考虑COW（访问同一个内存空间的object）</li>
+<li>但是non-const member function是必须考虑COW（申请一个新的内存空间，copy过去）。</li>
+<li>当成员函数的const和non-const同时存在的时候，C++特性：const object智能调用const版本，non-const object只能调用non-const版本。</li>
+</ol>
+<hr>
+<h2>后话</h2>
+<p>恭喜完成了【侯捷 C++ 面向对象高级开发】的学习！<br>
+本课程一共是上下两部分，上部分主要讲基础的OOP思想以及方法，下部分是深入的解析。总课时估计是十来小时，放在四五天学习会挺舒服的。</p>
+<p>Cpp是一个庞然大物，不必期待那么快就能学完。</p>
+<p>后面我将继续进行侯接课程的学习，持续更新。</p>
+<p>欢迎评论交流！</p></div>
+<div style="font-size:small;margin-top:8px;float:right;"></div>
+
+<button class="btn btn-block" type="button" onclick="openComments()" id="cmButton">评论</button>
+<div class="comments" id="comments"></div>
+
+</div>
+    <div id="footer"><div id="footer1">Copyright © <span id="copyrightYear"></span> <a href="https://cnsn521.github.io">寸衫的个人笔记</a></div>
+<div id="footer2">
+    <span id="runday"></span><span>Powered by <a href="https://meekdai.com/Gmeek.html" target="_blank">Gmeek</a></span>
+</div>
+
+<script>
+var now=new Date();
+document.getElementById("copyrightYear").innerHTML=now.getFullYear();
+
+if(""!=""){
+    var startSite=new Date("");
+    var diff=now.getTime()-startSite.getTime();
+    var diffDay=Math.floor(diff/(1000*60*60*24));
+    document.getElementById("runday").innerHTML="网站运行"+diffDay+"天"+" • ";
+}
+</script></div>
+</body>
+<script>
+var IconList={'sun': 'M8 10.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM8 12a4 4 0 100-8 4 4 0 000 8zM8 0a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0V.75A.75.75 0 018 0zm0 13a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 018 13zM2.343 2.343a.75.75 0 011.061 0l1.06 1.061a.75.75 0 01-1.06 1.06l-1.06-1.06a.75.75 0 010-1.06zm9.193 9.193a.75.75 0 011.06 0l1.061 1.06a.75.75 0 01-1.06 1.061l-1.061-1.06a.75.75 0 010-1.061zM16 8a.75.75 0 01-.75.75h-1.5a.75.75 0 010-1.5h1.5A.75.75 0 0116 8zM3 8a.75.75 0 01-.75.75H.75a.75.75 0 010-1.5h1.5A.75.75 0 013 8zm10.657-5.657a.75.75 0 010 1.061l-1.061 1.06a.75.75 0 11-1.06-1.06l1.06-1.06a.75.75 0 011.06 0zm-9.193 9.193a.75.75 0 010 1.06l-1.06 1.061a.75.75 0 11-1.061-1.06l1.06-1.061a.75.75 0 011.061 0z', 'moon': 'M9.598 1.591a.75.75 0 01.785-.175 7 7 0 11-8.967 8.967.75.75 0 01.961-.96 5.5 5.5 0 007.046-7.046.75.75 0 01.175-.786zm1.616 1.945a7 7 0 01-7.678 7.678 5.5 5.5 0 107.678-7.678z', 'sync': 'M1.705 8.005a.75.75 0 0 1 .834.656 5.5 5.5 0 0 0 9.592 2.97l-1.204-1.204a.25.25 0 0 1 .177-.427h3.646a.25.25 0 0 1 .25.25v3.646a.25.25 0 0 1-.427.177l-1.38-1.38A7.002 7.002 0 0 1 1.05 8.84a.75.75 0 0 1 .656-.834ZM8 2.5a5.487 5.487 0 0 0-4.131 1.869l1.204 1.204A.25.25 0 0 1 4.896 6H1.25A.25.25 0 0 1 1 5.75V2.104a.25.25 0 0 1 .427-.177l1.38 1.38A7.002 7.002 0 0 1 14.95 7.16a.75.75 0 0 1-1.49.178A5.5 5.5 0 0 0 8 2.5Z', 'home': 'M6.906.664a1.749 1.749 0 0 1 2.187 0l5.25 4.2c.415.332.657.835.657 1.367v7.019A1.75 1.75 0 0 1 13.25 15h-3.5a.75.75 0 0 1-.75-.75V9H7v5.25a.75.75 0 0 1-.75.75h-3.5A1.75 1.75 0 0 1 1 13.25V6.23c0-.531.242-1.034.657-1.366l5.25-4.2Zm1.25 1.171a.25.25 0 0 0-.312 0l-5.25 4.2a.25.25 0 0 0-.094.196v7.019c0 .138.112.25.25.25H5.5V8.25a.75.75 0 0 1 .75-.75h3.5a.75.75 0 0 1 .75.75v5.25h2.75a.25.25 0 0 0 .25-.25V6.23a.25.25 0 0 0-.094-.195Z', 'github': 'M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z', 'copy': 'M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z', 'check': 'M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z'};
+var utterancesLoad=0;
+
+let themeSettings={
+    "dark": ["dark","moon","#00f0ff","dark-blue"],
+    "light": ["light","sun","#ff5000","github-light"],
+    "auto": ["auto","sync","","preferred-color-scheme"]
+};
+function changeTheme(mode, icon, color, utheme){
+    document.documentElement.setAttribute("data-color-mode",mode);
+    document.getElementById("themeSwitch").setAttribute("d",value=IconList[icon]);
+    document.getElementById("themeSwitch").parentNode.style.color=color;
+    if(utterancesLoad==1){utterancesTheme(utheme);}
+}
+function modeSwitch(){
+    let currentMode=document.documentElement.getAttribute('data-color-mode');
+    let newMode = currentMode === "light" ? "dark" : currentMode === "dark" ? "auto" : "light";
+    localStorage.setItem("meek_theme", newMode);
+    if(themeSettings[newMode]){
+        changeTheme(...themeSettings[newMode]);
+    }
+}
+function utterancesTheme(theme){
+    const message={type:'set-theme',theme: theme};
+    const iframe=document.getElementsByClassName('utterances-frame')[0];
+    iframe.contentWindow.postMessage(message,'https://utteranc.es');
+}
+if(themeSettings[theme]){changeTheme(...themeSettings[theme]);}
+console.log("\n %c Gmeek last https://github.com/Meekdai/Gmeek \n","padding:5px 0;background:#02d81d;color:#fff");
+</script>
+
+<script>
+document.getElementById("pathHome").setAttribute("d",IconList["home"]);
+document.getElementById("pathIssue").setAttribute("d",IconList["github"]);
+
+
+
+function openComments(){
+    cm=document.getElementById("comments");
+    cmButton=document.getElementById("cmButton");
+    cmButton.innerHTML="loading";
+    span=document.createElement("span");
+    span.setAttribute("class","AnimatedEllipsis");
+    cmButton.appendChild(span);
+
+    script=document.createElement("script");
+    script.setAttribute("src","https://utteranc.es/client.js");
+    script.setAttribute("repo","cnsn521/cnsn521.github.io");
+    script.setAttribute("issue-term","title");
+    
+    if(localStorage.getItem("meek_theme")=="dark"){script.setAttribute("theme","dark-blue");}
+    else if(localStorage.getItem("meek_theme")=="light") {script.setAttribute("theme","github-light");}
+    else{script.setAttribute("theme","preferred-color-scheme");}
+    
+    script.setAttribute("crossorigin","anonymous");
+    script.setAttribute("async","");
+    cm.appendChild(script);
+
+    int=self.setInterval("iFrameLoading()",200);
+}
+
+function iFrameLoading(){
+    var utterances=document.getElementsByClassName('utterances');
+    if(utterances.length==1){
+        if(utterances[0].style.height!=""){
+            utterancesLoad=1;
+            int=window.clearInterval(int);
+            document.getElementById("cmButton").style.display="none";
+            console.log("utterances Load OK");
+        }
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const createClipboardHTML = (codeContent, additionalClasses = '') => `
+        <pre class="notranslate"><code class="notranslate">${codeContent}</code></pre>
+        <div class="clipboard-container position-absolute right-0 top-0 ${additionalClasses}">
+            <clipboard-copy class="ClipboardButton btn m-2 p-0" role="button" style="display: inherit;">
+                <svg height="16" width="16" class="octicon octicon-copy m-2"><path d="${IconList["copy"]}"></path></svg>
+                <svg height="16" width="16" class="octicon octicon-check color-fg-success m-2 d-none"><path d="${IconList["check"]}"></path></svg>
+            </clipboard-copy>
+            <div class="copy-feedback">Copied!</div>
+        </div>
+    `;
+
+    const handleCodeElements = (selector = '') => {
+        document.querySelectorAll(selector).forEach(codeElement => {
+            const codeContent = codeElement.innerHTML;
+            const newStructure = document.createElement('div');
+            newStructure.className = 'snippet-clipboard-content position-relative overflow-auto';
+            newStructure.innerHTML = createClipboardHTML(codeContent);
+
+            const parentElement = codeElement.parentElement;
+            if (selector.includes('highlight')) {
+                parentElement.insertBefore(newStructure, codeElement.nextSibling);
+                parentElement.removeChild(codeElement);
+            } else {
+                parentElement.parentElement.replaceChild(newStructure, parentElement);
+            }
+        });
+    };
+
+    handleCodeElements('pre.notranslate > code.notranslate');
+    handleCodeElements('div.highlight > pre.notranslate');
+
+    let currentFeedback = null;
+    document.querySelectorAll('clipboard-copy').forEach(copyButton => {
+        copyButton.addEventListener('click', () => {
+            const codeContent = copyButton.closest('.snippet-clipboard-content').innerText;
+            const tempTextArea = document.createElement('textarea');
+            tempTextArea.value = codeContent;
+            document.body.appendChild(tempTextArea);
+            tempTextArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempTextArea);
+
+            const copyIcon = copyButton.querySelector('.octicon-copy');
+            const checkIcon = copyButton.querySelector('.octicon-check');
+            const copyFeedback = copyButton.nextElementSibling;
+
+            if (currentFeedback && currentFeedback !== copyFeedback) {currentFeedback.style.display = 'none';}
+            currentFeedback = copyFeedback;
+
+            copyIcon.classList.add('d-none');
+            checkIcon.classList.remove('d-none');
+            copyFeedback.style.display = 'block';
+            copyButton.style.borderColor = 'var(--color-success-fg)';
+
+            setTimeout(() => {
+                copyIcon.classList.remove('d-none');
+                checkIcon.classList.add('d-none');
+                copyFeedback.style.display = 'none';
+                copyButton.style.borderColor = '';
+            }, 2000);
+        });
+    });
+});
+
+</script>
+
+
+</html>
